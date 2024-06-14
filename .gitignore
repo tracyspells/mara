@@ -1,5 +1,10 @@
-/*.rbxlx
-/*.rbxl
-/*.rbxlx.lock
-/*.rbxl.lock
-/*.lock
+*.rbxm
+*.rbxmx
+*.rbxl
+*.rbxlx
+*.lock
+
+/sourcemap.json
+
+/Packages
+/DevPackages
