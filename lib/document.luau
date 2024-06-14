@@ -13,7 +13,7 @@ end
 
 local function createDocument<C>(initialContents: C): Document<C>
 	assert(
-		validateContents(initialContents), 
+		validateContents(initialContents),
 		`Documents must be based on tables with no existing metatables. Got {typeof(initialContents)}`
 	)
 

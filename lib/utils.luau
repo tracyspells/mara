@@ -43,6 +43,6 @@ local function freezeDeep<T>(tbl: { [string]: any }): T
 end
 
 return table.freeze({
-    merge = merge,
-    freezeDeep = freezeDeep,
+	merge = merge,
+	freezeDeep = freezeDeep,
 })

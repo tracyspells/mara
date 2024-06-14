@@ -7,7 +7,7 @@ local combineDocuments = require(script.combineDocuments)
 export type Document<C> = types.Document<C>
 
 return {
-    createDocument = document,
-    combineDocuments = combineDocuments,
-    None = None,
+	createDocument = document,
+	combineDocuments = combineDocuments,
+	None = None,
 }
