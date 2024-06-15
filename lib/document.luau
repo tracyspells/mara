@@ -36,8 +36,8 @@ local function createDocument<C>(initialContents: C): Document<C>
 
 		return {
 			Connected = true,
-			Disconnect = function(self)
-				self.Connected = false
+			Disconnect = function(connection)
+				connection.Connected = false
 				stopObserving()
 			end,
 		}
@@ -48,8 +48,8 @@ local function createDocument<C>(initialContents: C): Document<C>
 
 		return {
 			Connected = true,
-			Disconnect = function(self)
-				self.Connected = false
+			Disconnect = function(connection)
+				connection.Connected = false
 				stopObserving()
 			end,
 		}
