@@ -3,5 +3,8 @@ name = "hahafunnyman/mara"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
+license = "MIT"
+exclude = ["sourcemap.json", "DevPackages", "Packages"]
 
-[dependencies]
+[dev-dependencies]
+TestEZ = "roblox/testez@0.4.1"

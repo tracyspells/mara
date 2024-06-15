@@ -1,0 +1,38 @@
+{
+    "name": "mara",
+    "tree": {
+      "$className": "DataModel",
+
+      "Players": {
+        "$className": "Players",
+        "$properties": {
+          "CharacterAutoLoads": false
+        }
+      },
+
+      "ReplicatedStorage": {
+        "$className": "ReplicatedStorage",
+        "Packages": {
+            "$className": "Folder",
+            "Mara": {
+                "$path": "lib"
+            }
+        },
+
+        "DevPackages": {
+            "$path": "DevPackages"
+          }
+      },
+
+      "TestService": {
+        "$className": "TestService",
+        "$properties": {
+          "ExecuteWithStudioRun": true
+        },
+
+        "Test": {
+          "$path": "test/runTests.server.luau"
+        }
+      }
+    }
+  }

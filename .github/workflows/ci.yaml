@@ -22,7 +22,7 @@ jobs:
         run: wally install
 
       - name: Generate sourcemap.json
-        run: rojo sourcemap default.project.json --output sourcemap.json
+        run: rojo sourcemap test.project.json --output sourcemap.json
 
       - name: Download global Roblox types
         shell: bash
@@ -30,6 +30,7 @@ jobs:
 
       - name: Run Luau Analyze
         run: luau-lsp analyze 
+            --defs=test/testez.d.luau 
             --defs=globalTypes.d.luau
             --base-luaurc=.luaurc 
             --sourcemap=sourcemap.json 
