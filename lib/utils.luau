@@ -1,5 +1,8 @@
 local None = require(script.Parent.None)
 
+-- https://github.com/Sleitnick/RbxUtil/blob/main/modules/silo/Util.lua
+-- edited it so that it shallow copies the specified tables
+-- instead of deep copying
 local function extend<T>(a: any, b: any): T
 	local tbl = table.clone(a)
 
@@ -47,7 +50,7 @@ end
 local function copyDeep<T>(dictionary: T): T
 	local new = table.clone(dictionary :: any)
 
-	for key, value in (dictionary :: any) do
+	for key, value in dictionary :: any do
 		if type(value) == "table" then
 			new[key] = copyDeep(value)
 		end

@@ -1,15 +1,15 @@
 return function()
-    local Watchdog = require(script.Parent.Watchdog)
+	local Watchdog = require(script.Parent.Watchdog)
 	local watchdog
 
 	beforeEach(function()
 		watchdog = Watchdog.new()
 	end)
 
-    afterEach(function()  
-        watchdog:sleep()
-        watchdog = nil :: never
-    end)
+	afterEach(function()
+		watchdog:sleep()
+		watchdog = nil :: never
+	end)
 
 	it("should observe subjects", function()
 		local MAX_SUBJECTS = 5

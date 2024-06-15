@@ -22,7 +22,7 @@ export type Watchdog = {
 local Watchdog = {}
 
 function Watchdog.new(): WatchdogObject
-    local watchdog = {}
+	local watchdog = {}
 	local observing: ObserveTable = {}
 	local isSleeping = false
 

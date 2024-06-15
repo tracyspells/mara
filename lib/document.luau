@@ -21,7 +21,7 @@ local function createDocument<C>(initialContents: C): Document<C>
 	local document = {}
 
 	local contents = utils.freezeDeep(initialContents :: any)
-	local watchdog = Watchdog.new() 
+	local watchdog = Watchdog.new()
 
 	function document:shred()
 		watchdog:sleep()
@@ -39,7 +39,7 @@ local function createDocument<C>(initialContents: C): Document<C>
 			Disconnect = function(self)
 				self.Connected = false
 				stopObserving()
-			end
+			end,
 		}
 	end
 
@@ -51,7 +51,7 @@ local function createDocument<C>(initialContents: C): Document<C>
 			Disconnect = function(self)
 				self.Connected = false
 				stopObserving()
-			end
+			end,
 		}
 	end
 

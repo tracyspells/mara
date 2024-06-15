@@ -32,7 +32,7 @@ return function()
 
 	afterEach(function()
 		document:shred()
-        document = nil :: never
+		document = nil :: never
 	end)
 
 	it("should edit contents", function()
@@ -71,23 +71,23 @@ return function()
 			changes += 1
 		end)
 
-        for _ = 1, 10 do
-            document:edit(function(contents)
-                contents.a += 1
-            end)
-        end
+		for _ = 1, 10 do
+			document:edit(function(contents)
+				contents.a += 1
+			end)
+		end
 
 		expect(changes).to.equal(10)
 	end)
 
-	it("should listen to changes only once", function() 
+	it("should listen to changes only once", function()
 		local changes = 0
 
 		document:once(function()
 			changes += 1
 		end)
 
-        document:edit(function(contents)
+		document:edit(function(contents)
 			contents.a += 1
 		end)
 
@@ -108,52 +108,48 @@ return function()
 
 	it("shouldn't read contents if selection is nil", function()
 		local result = document:read(function(contents)
-            return contents["f"]
+			return contents["f"]
 		end)
 
 		expect(result).to.never.be.ok()
 	end)
 
-    it("shouldn't detect changes after being shredded", function()  
-        local changes = 0
+	it("shouldn't detect changes after being shredded", function()
+		local changes = 0
 
-        document:changed(function()
+		document:changed(function()
 			changes += 1
 		end)
 
-        document:edit(function(contents)
-            contents.a += 2
-        end)
+		document:edit(function(contents)
+			contents.a += 2
+		end)
 
-        document:shred()
-        document:edit(function(contents)
-            contents.a += 2
-        end)
+		document:shred()
+		document:edit(function(contents)
+			contents.a += 2
+		end)
 
-        expect(changes).to.equal(1)
-    end)
+		expect(changes).to.equal(1)
+	end)
 
+	it("shouldn't detect changes if `:changed()` was disconnected", function()
+		local changes = 0
 
-    it(
-        "shouldn't detect changes if `:changed()` was disconnected",
-        function()  
-            local changes = 0
+		local connection = document:changed(function()
+			changes += 1
+		end)
 
-            local connection = document:changed(function()
-                changes += 1
-            end)
+		connection:Disconnect()
 
-            connection:Disconnect()
-			
-            document:edit(function(contents)
-                contents.a += 2
-            end)
+		document:edit(function(contents)
+			contents.a += 2
+		end)
 
-            document:edit(function(contents)
-                contents.a += 2
-            end)
+		document:edit(function(contents)
+			contents.a += 2
+		end)
 
-            expect(changes).to.never.be.near(1)
-        end
-    )
+		expect(changes).to.never.be.near(1)
+	end)
 end
