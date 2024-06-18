@@ -32,11 +32,7 @@ type Predicate<C> = types.Predicate<C>
 type Listener<C> = types.Listener<C>
 
 local function isPrimitive(value: any): boolean
-	if
-		value ~= nil
-		and isStrictTable(value) == false
-		and table.find(PRIMITIVES, typeof(value)) ~= nil
-	then
+	if value ~= nil and isStrictTable(value) == false and table.find(PRIMITIVES, typeof(value)) ~= nil then
 		return true
 	end
 

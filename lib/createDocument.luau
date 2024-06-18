@@ -58,7 +58,6 @@ local function createDocument<C>(initialContents): Document<C>
 		watchdog:bark(contents, oldContents)
 	end
 
-	
 	function document:edit(makeChanges)
 		local oldContents = contents
 		local newContents = copy(contents)

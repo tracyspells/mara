@@ -16,7 +16,7 @@ return function()
 	local document: Document<State>
 	local state: State
 
-	beforeAll(function()  
+	beforeAll(function()
 		state = {
 			a = 1,
 			b = {
@@ -27,8 +27,8 @@ return function()
 		}
 	end)
 
-	afterAll(function() 
-		state = nil :: never 
+	afterAll(function()
+		state = nil :: never
 	end)
 
 	beforeEach(function()
@@ -54,7 +54,7 @@ return function()
 		end)
 
 		local result = document:read()
-		
+
 		expect(result.a).to.equal(2)
 		expect(result.b.c).to.equal(4)
 		expect(result.e).to.equal(false)
