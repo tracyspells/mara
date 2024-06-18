@@ -1,26 +1,23 @@
+--!native
+
 local Watchdog = require(script.Parent.Watchdog)
 local types = require(script.Parent.types)
-local utils = require(script.Parent.utils)
+local isStrictTable = require(script.Parent.isStrictTable)
+
+local copy = table.clone
 
 type Document<C> = types.Document<C>
+type Connection = types.Connection
 
-local function validateContents(value: any): boolean
-	if typeof(value) == "table" and getmetatable(value) == nil then
-		return true
-	end
-
-	return false
-end
-
-local function createDocument<C>(initialContents: C): Document<C>
+local function createDocument<C>(initialContents): Document<C>
 	assert(
-		validateContents(initialContents),
+		isStrictTable(initialContents),
 		`Documents must be based on tables with no existing metatables. Got {typeof(initialContents)}`
 	)
 
 	local document = {}
+	local contents = initialContents
 
-	local contents = utils.freezeDeep(initialContents :: any)
 	local watchdog = Watchdog.new()
 
 	function document:shred()
@@ -37,33 +34,40 @@ local function createDocument<C>(initialContents: C): Document<C>
 		return {
 			Connected = true,
 			Disconnect = function(connection)
+				if not connection.Connected then
+					return
+				end
+
 				connection.Connected = false
-				stopObserving()
+
+				if stopObserving then
+					stopObserving()
+				end
+			end,
+
+			Destroy = function(connection)
+				connection:Disconnect()
 			end,
 		}
 	end
 
-	function document:once(callback)
-		local stopObserving = watchdog:observeOnce(callback)
+	function document:undoAll()
+		local oldContents = contents
 
-		return {
-			Connected = true,
-			Disconnect = function(connection)
-				connection.Connected = false
-				stopObserving()
-			end,
-		}
+		contents = initialContents
+		watchdog:bark(contents, oldContents)
 	end
 
+	
 	function document:edit(makeChanges)
 		local oldContents = contents
-		local newContents = utils.extend(initialContents, contents) :: any
+		local newContents = copy(contents)
 		makeChanges(newContents)
 
 		if newContents ~= oldContents then
-			contents = utils.freezeDeep(newContents)
+			contents = newContents
 
-			watchdog:bark(contents, oldContents)
+			watchdog:bark(newContents, oldContents)
 		end
 	end
 

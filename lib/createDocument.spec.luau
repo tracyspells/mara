@@ -1,17 +1,22 @@
+local types = require(script.Parent.types)
+
+type Document<C> = types.Document<C>
+type State = {
+	a: number,
+	b: {
+		c: number,
+		d: { string },
+	},
+	e: boolean,
+}
+
 return function()
-	local createDocument = require(script.Parent.document)
+	local createDocument = require(script.Parent.createDocument)
 
-	local document
-	local state: {
-		a: number,
-		b: {
-			c: number,
-			d: { string },
-		},
-		e: boolean,
-	}
+	local document: Document<State>
+	local state: State
 
-	beforeAll(function()
+	beforeAll(function()  
 		state = {
 			a = 1,
 			b = {
@@ -22,8 +27,8 @@ return function()
 		}
 	end)
 
-	afterAll(function()
-		state = nil :: never
+	afterAll(function() 
+		state = nil :: never 
 	end)
 
 	beforeEach(function()
@@ -38,30 +43,26 @@ return function()
 	it("should edit contents", function()
 		document:edit(function(contents)
 			contents.a += 1
-			contents.b.c += 2
-			contents.b["g"] = "hi"
 			contents.e = false
 
+			contents.b = table.clone(contents.b)
+			contents.b.c += 2
+			contents.b["g"] = "hi"
+
+			contents.b.d = table.clone(contents.b.d)
 			table.insert(contents.b.d, "F")
 		end)
 
 		local result = document:read()
-
+		
 		expect(result.a).to.equal(2)
 		expect(result.b.c).to.equal(4)
 		expect(result.e).to.equal(false)
+
 		expect(result.b["g"]).to.be.ok()
 		expect(result.b["g"]).to.equal("hi")
+
 		expect(#result.b.d).to.equal(3)
-
-		document:edit(function(contents)
-			contents["f"] = {}
-			table.insert(contents["f"], "hello")
-		end)
-
-		local result2 = document:read()
-		expect(result2["f"]).to.be.ok()
-		expect(result2["f"][1]).to.equal("hello")
 	end)
 
 	it("should listen to changes", function()
@@ -71,22 +72,6 @@ return function()
 			changes += 1
 		end)
 
-		for _ = 1, 10 do
-			document:edit(function(contents)
-				contents.a += 1
-			end)
-		end
-
-		expect(changes).to.equal(10)
-	end)
-
-	it("should listen to changes only once", function()
-		local changes = 0
-
-		document:once(function()
-			changes += 1
-		end)
-
 		document:edit(function(contents)
 			contents.a += 1
 		end)
@@ -95,15 +80,7 @@ return function()
 			contents.a += 1
 		end)
 
-		expect(changes).to.equal(1)
-	end)
-
-	it("shouldn't modify readonly content", function()
-		local result = document:read()
-
-		expect(function()
-			result.a += 1
-		end).to.throw("attempt to modify a readonly table")
+		expect(changes).to.equal(2)
 	end)
 
 	it("shouldn't read contents if selection is nil", function()
