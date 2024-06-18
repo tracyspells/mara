@@ -1,16 +1,13 @@
 local types = require(script.types)
-local None = require(script.None)
-
-local document = require(script.document)
+local createDocument = require(script.createDocument)
 local stapleDocuments = require(script.stapleDocuments)
-local watchDocument = require(script.watchDocument)
+local watchUtils = require(script.watchUtils)
 
 export type Document<C> = types.Document<C>
 
 return {
-	createDocument = document,
+	createDocument = createDocument,
 	stapleDocuments = stapleDocuments,
-	watchDocument = watchDocument,
-
-	None = None,
+	watch = watchUtils.watch,
+	watchFor = watchUtils.watchFor,
 }
