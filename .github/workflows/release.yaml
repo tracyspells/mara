@@ -3,7 +3,6 @@ name: release
 on:
   release:
     types: [published]
-    branches: ["tracyspells/issue5"]
 
 jobs:
   release:
