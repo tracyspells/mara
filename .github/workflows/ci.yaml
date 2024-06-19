@@ -13,10 +13,10 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Aftman
-        uses: ok-nick/setup-aftman@v0.4.2
+        uses: ok-nick/setup-aftman@v0
 
       - name: Install dependencies
         run: wally install
@@ -29,13 +29,13 @@ jobs:
         run: curl -O https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.luau
 
       - name: Run Luau Analyze
-        run: luau-lsp analyze 
-            --defs=test/testez.d.luau 
-            --defs=globalTypes.d.luau
-            --base-luaurc=.luaurc 
-            --sourcemap=sourcemap.json 
-            --ignore="**/_Index/**" 
-            --no-strict-dm-types lib
+        run: luau-lsp analyze
+          --defs=test/testez.d.luau
+          --defs=globalTypes.d.luau
+          --base-luaurc=.luaurc
+          --sourcemap=sourcemap.json
+          --ignore="**/_Index/**"
+          --no-strict-dm-types lib
 
       - name: Check code quality
         run: |
