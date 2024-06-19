@@ -39,7 +39,7 @@ local function memoize<Args...>(fn: (Args...) -> any?, equalityFunc: CompareFunc
 			end
 		end
 
-		if not resultEqualityFunc then
+		if resultEqualityFunc == nil then
 			lastResult = result
 
 			return result
