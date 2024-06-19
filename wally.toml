@@ -1,20 +1,8 @@
 [package]
-name = "hahafunnyman/mara"
+name = "tracyspells/mara"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
-exclude = [
-    "sourcemap.json",
-    "test.project.json", 
-    "DevPackages", 
-    "Packages"
-]
-
-[dev-dependencies]
-TestEZ = "roblox/testez@0.4.1"
-
-[dependencies]
-Reflex = "littensy/reflex@4.3.1"
-Rodux = "roblox/rodux@4.0.0-rc.0"
-Silo = "sleitnick/silo@0.2.0"
+exclude = ["**"]
+include = ["lib", "lib/**/*.luau", "wally.toml", "default.project.json", "LICENSE"]
