@@ -2,7 +2,7 @@
 
 local Watchdog = require(script.Parent.Watchdog)
 local types = require(script.Parent.types)
-local isStrictTable = require(script.Parent.isStrictTable)
+local isStrictTable = require(script.Parent.utils.isStrictTable)
 
 local copy = table.clone
 

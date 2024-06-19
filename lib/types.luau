@@ -21,4 +21,6 @@ export type PrimitiveSelector<T> = (T) -> string | number | boolean
 export type Predicate<C> = (C, C) -> boolean
 export type Listener<C> = (C, C) -> ()
 
+export type CompareFunction = (a: any, b: any) -> boolean
+
 return nil
