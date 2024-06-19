@@ -39,13 +39,11 @@ local function memoize<Args...>(fn: (Args...) -> any?, equalityFunc: CompareFunc
 			end
 		end
 
-		if not resultEqualityFunc then
+		if resultEqualityFunc == nil then
 			lastResult = result
 
 			return result
-		end
-
-		if firstRan or (result ~= lastResult and resultEqualityFunc(result, lastResult) == false) then
+		elseif firstRan or (result ~= lastResult and resultEqualityFunc(result, lastResult) == false) then
 			firstRan = false
 			lastResult = result
 		end
