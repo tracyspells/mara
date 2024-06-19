@@ -17,6 +17,7 @@ export type Document<C = any> = {
 export type DocumentMap = { [string]: Document<any> }
 
 export type Selector<T> = (T) -> T
+export type PrimitiveSelector<T> = (T) -> string | number | boolean
 export type Predicate<C> = (C, C) -> boolean
 export type Listener<C> = (C, C) -> ()
 

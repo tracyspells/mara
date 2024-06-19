@@ -28,6 +28,7 @@ type Document<C> = types.Document<C>
 type Connection = types.Connection
 
 type Selector<T> = types.Selector<T>
+type PrimitiveSelector<T> = types.PrimitiveSelector<T>
 type Predicate<C> = types.Predicate<C>
 type Listener<C> = types.Listener<C>
 
@@ -90,16 +91,12 @@ local function watch<C>(document: Document<C>, ...: any): Connection
 	end)
 end
 
-local function watchFor<C>(document: Document<C>, keyWord: string, listener: Listener<C>): Connection
-	local selector: Selector<C> = function(contents: any)
-		return contents[keyWord]
-	end
-
-	if not isPrimitive(document:read(selector)) then
+local function watchFor<C>(document: Document<C>, keyword: PrimitiveSelector<C>, listener: Listener<C>): Connection
+	if not isPrimitive(document:read(keyword :: any)) then
 		error(PRIMITIVE_WARNING, 2)
 	end
 
-	return watch(document, selector, listener)
+	return watch(document, keyword, listener)
 end
 
 return {
