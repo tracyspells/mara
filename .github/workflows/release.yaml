@@ -31,7 +31,7 @@ jobs:
         with:
           path: wally.toml
           key: "package.version"
-          value: "${ VERSION }"
+          value: "$VERSION"
 
       - name: Publish Wally package
         run: |
