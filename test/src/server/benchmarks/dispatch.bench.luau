@@ -35,11 +35,11 @@ local LOOPS = 500
 return {
 	ParameterGenerator = function()
 		local result = {
-			
+
 			document = Mara.createDocument({
-                countA = 0,
-                countB = 0,
-            }),
+				countA = 0,
+				countB = 0,
+			}),
 
 			producer = Reflex.createProducer({ countA = 0, countB = 0 }, {
 				incrementA = function(state)
@@ -101,15 +101,14 @@ return {
 
 		["Mara.Document"] = function(profiler, parameter)
 			for _ = 1, LOOPS do
-                parameter.document:edit(function(contents)
+				parameter.document:edit(function(contents)
 					contents.countA += 1
-                end)
+				end)
 
-			    parameter.document:edit(function(contents)
+				parameter.document:edit(function(contents)
 					contents.countB += 1
-                end)
+				end)
 			end
 		end,
 	},
 }
-
