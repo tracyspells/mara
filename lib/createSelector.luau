@@ -9,7 +9,7 @@ type EqualityOptions = {
 }
 
 -- https://github.com/littensy/reflex/blob/master/src/createSelector.lua
-local function memoize<Args...>(fn: (Args...) -> any?, equalityFunc: CompareFunction?, resultEqualityFunc: CompareFunction?)
+local function memoize<Args...>(fn: (Args...) -> any?, equalityFunc: CompareFunction, resultEqualityFunc: CompareFunction)
 	local lastArguments = {}
 	local lastArgumentCount = -1
 	local lastResult = nil
