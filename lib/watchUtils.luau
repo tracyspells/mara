@@ -1,7 +1,7 @@
 local RunService = game:GetService("RunService")
 
 local types = require(script.Parent.types)
-local isStrictTable = require(script.Parent.isStrictTable)
+local isStrictTable = require(script.Parent.utils.isStrictTable)
 
 local IS_STUDIO = RunService:IsStudio()
 
