@@ -15,7 +15,7 @@ jobs:
         run: rm -rf **/*.spec.luau
 
       - name: Install Aftman
-        run: ok-nick/setup-aftman@v0
+        run: ok-nick/setup-aftman@v0.4.2
 
       - name: Install Packages
         run: wally install
