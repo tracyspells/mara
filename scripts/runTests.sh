@@ -1,5 +1,5 @@
-rojo build test.project.json -o test.rbxl
+rojo build test/default.project.json -o test/build.rbxl
 
-run-in-roblox --place test.rbxl --script test/runTests.server.luau
+run-in-roblox --place test/build.rbxl --script test/src/server/runTests.server.luau
 
-rm test.rbxl
+rm test/build.rbxl

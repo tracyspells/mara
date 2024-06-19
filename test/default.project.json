@@ -1,5 +1,5 @@
 {
-    "name": "mara",
+    "name": "mara-test",
     "tree": {
       "$className": "DataModel",
 
@@ -15,7 +15,7 @@
         "Packages": {
             "$path": "Packages",
             "Mara": {
-                "$path": "lib"
+                "$path": "../"
             }
         },
 
@@ -26,19 +26,8 @@
 
       "ServerScriptService": {
         "$className": "ServerScriptService",
-        "Benchmarks":{
-          "$path": "test/benchmarks"
-        }
-      },
-
-      "TestService": {
-        "$className": "TestService",
-        "$properties": {
-          "ExecuteWithStudioRun": true
-        },
-
-        "Test": {
-          "$path": "test/runTests.server.luau"
+        "Server": {
+          "$path": "src/server"
         }
       }
     }
