@@ -1,0 +1,52 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove .spec files
+        run: rm -rf **/*.spec.luau
+
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+
+      - name: Install packages
+        run: wally install
+
+      - name: Remove "v" from tag prefix
+        run: |
+          TAG=${{ github.event.release.tag_name }}
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Bump package version
+        uses: sebasptsch/toml-edit-action@v1.3.0
+        with:
+          path: wally.toml
+          key: "package.version"
+          value: "${{ env.VERSION }}"
+
+      - name: Publish Wally package
+        run: |
+          mkdir -p ~/.wally
+          echo "$WALLY_AUTH" > ~/.wally/auth.toml
+          wally publish
+        env:
+          WALLY_AUTH: ${{ secrets.WALLY_AUTH }}
+
+      - name: Build package
+        run: rojo build --output mara.rbxm
+
+      - name: Upload release
+        uses: softprops/action-gh-release@v2
+        if: ${{ github.event.release }}
+        with:
+          files: mara.rbxm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
