@@ -1,8 +1,9 @@
 [package]
 name = "tracyspells/mara"
-version = "0.1.0"
+version = "0.2.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
+description = "A simple state container for Roblox"
 exclude = ["**"]
 include = ["lib", "lib/**/*.luau", "wally.toml", "default.project.json", "LICENSE"]
