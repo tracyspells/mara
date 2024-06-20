@@ -1,4 +1,5 @@
 local types = require(script.Parent.types)
+local None = require(script.Parent.None)
 
 type Document<C> = types.Document<C>
 type State = {
@@ -89,6 +90,28 @@ return function()
 		end)
 
 		expect(result).to.never.be.ok()
+	end)
+
+	it("shouldn't update contents if :edit() returns None", function()  
+		local changes = 0
+
+		document:changed(function()
+			changes += 1
+		end)
+
+		document:edit(function(contents)
+			contents.a += 1
+		end)
+
+		document:edit(function(contents)
+			contents.a += 1
+		end)
+
+		document:edit(function()
+			return None
+		end)
+
+		expect(changes).to.never.be.near(3)
 	end)
 
 	it("shouldn't detect changes after being shredded", function()

@@ -1,6 +1,7 @@
 --!native
 
 local Watchdog = require(script.Parent.Watchdog)
+local None = require(script.Parent.None)
 local types = require(script.Parent.types)
 local isStrictTable = require(script.Parent.utils.isStrictTable)
 
@@ -61,7 +62,11 @@ local function createDocument<C>(initialContents): Document<C>
 	function document:edit(makeChanges)
 		local oldContents = contents
 		local newContents = copy(contents)
-		makeChanges(newContents)
+
+		local changes = makeChanges(newContents)
+		if changes == None then
+			newContents = oldContents
+		end
 
 		if newContents ~= oldContents then
 			contents = newContents
