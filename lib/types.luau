@@ -10,13 +10,15 @@ export type Document<C = any> = {
 	shred: (self: Document<C>) -> (),
 	changed: (self: Document<C>, callback: (C, C) -> ()) -> Connection,
 	read: (self: Document<C>, selector: ((contents: C) -> C)?) -> C,
-	edit: (self: Document<C>, makeChanges: (contents: C) -> ()) -> (),
+	edit: (self: Document<C>, makeChanges: (contents: C) -> () | None) -> (),
 	undoAll: (self: Document<C>) -> (),
 }
 
 export type DocumentMap = { [string]: Document<any> }
 
-export type Selector<T> = (T) -> T
+export type None = typeof(newproxy(true)) & { [string]: any }
+
+export type Selector<T> = (T) -> any
 export type PrimitiveSelector<T> = (T) -> string | number | boolean
 export type Predicate<C> = (C, C) -> boolean
 export type Listener<C> = (C, C) -> ()
