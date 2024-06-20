@@ -92,7 +92,7 @@ return function()
 		expect(result).to.never.be.ok()
 	end)
 
-	it("shouldn't update contents if :edit() returns None", function()  
+	it("shouldn't update contents if :edit() returns None", function()
 		local changes = 0
 
 		document:changed(function()
