@@ -26,9 +26,6 @@ local LOOPS = 500
 	Reflex.Producer: 206 microseconds
 	Rodux.Store: 566 microseconds
 	Sleitnick.Silo: 1380 microseconds
-
-	Summary
-
 	
 ]]
 
@@ -60,11 +57,11 @@ return {
 			})),
 
 			silo = Silo.new({ countA = 0, countB = 0 }, {
-				incrementA = function(state)
-					state.countA += 1
+				incrementA = function(state, amount)
+					state.countA += amount
 				end,
-				incrementB = function(state)
-					state.countB += 1
+				incrementB = function(state, amount)
+					state.countB += amount
 				end,
 			}),
 		}
@@ -94,8 +91,8 @@ return {
 
 		["Sleitnick.Silo"] = function(profiler, parameter)
 			for _ = 1, LOOPS do
-				parameter.silo:Dispatch(parameter.silo.Actions.incrementA())
-				parameter.silo:Dispatch(parameter.silo.Actions.incrementB())
+				parameter.silo:Dispatch(parameter.silo.Actions.incrementA(1))
+				parameter.silo:Dispatch(parameter.silo.Actions.incrementB(1))
 			end
 		end,
 

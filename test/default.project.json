@@ -1,34 +1,33 @@
 {
-    "name": "mara-test",
-    "tree": {
-      "$className": "DataModel",
-
-      "Players": {
-        "$className": "Players",
-        "$properties": {
-          "CharacterAutoLoads": false
+  "name": "mara-test",
+  "tree": {
+    "$className": "DataModel",
+    "Players": {
+      "$className": "Players",
+      "$properties": {
+        "CharacterAutoLoads": false
+      }
+    },
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "Packages": {
+        "$path": "Packages",
+        "Mara": {
+          "$path": "../"
         }
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "DevPackages": {
+        "$path": "DevPackages"
       },
-
-      "ReplicatedStorage": {
-        "$className": "ReplicatedStorage",
-        "Packages": {
-            "$path": "Packages",
-            "Mara": {
-                "$path": "../"
-            }
-        },
-
-        "DevPackages": {
-            "$path": "DevPackages"
-          }
+      "Benchmarks": {
+        "$path": "src/benchmarks"
       },
-
-      "ServerScriptService": {
-        "$className": "ServerScriptService",
-        "Server": {
-          "$path": "src/server"
-        }
+      "runTests": {
+        "$path": "src/runTests.server.luau"
       }
     }
   }
+}

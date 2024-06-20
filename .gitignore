@@ -4,7 +4,7 @@
 *.rbxlx
 *.lock
 
-/sourcemap.json
+sourcemap.json
 
 Packages
 DevPackages
