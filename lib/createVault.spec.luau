@@ -2,8 +2,8 @@ return function()
 	local createVault = require(script.Parent.createVault)
 
 	local vault: createVault.VaultObject<number>
-    
-    type VaultItem = createVault.Item<number>
+
+	type VaultItem = createVault.Item<number>
 
 	beforeEach(function()
 		vault = createVault(10)
@@ -15,9 +15,9 @@ return function()
 	end)
 
 	it("should store items", function()
-        for index = 1, 8 do
+		for index = 1, 8 do
 			vault:push({ id = index, value = math.random(index + 10) })
-		end 
+		end
 
 		expect(vault:getSize()).to.equal(8)
 	end)
@@ -31,15 +31,14 @@ return function()
 		expect(vault:getSize()).to.never.be.near(1)
 	end)
 
-    it("must get a specified item", function() 
-        for index = 1, 8 do
+	it("must get a specified item", function()
+		for index = 1, 8 do
 			vault:push({ id = index, value = math.random(index + 10) })
-		end 
+		end
 
-        local item = vault:getItem(2)
+		local item = vault:getItem(2)
 
-        expect(item).to.be.ok()
-        expect((item :: VaultItem).id).to.equal(2)
-    end)
-
+		expect(item).to.be.ok()
+		expect((item :: VaultItem).id).to.equal(2)
+	end)
 end

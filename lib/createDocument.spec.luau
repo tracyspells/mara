@@ -84,22 +84,22 @@ return function()
 		expect(changes).to.equal(2)
 	end)
 
-	it("should undo an edit", function()  
+	it("should undo an edit", function()
 		document:edit(function(contents)
 			contents.a += 1
 		end)
 
 		local result = document:read()
-		
+
 		expect(result.a).to.equal(2)
 
 		document:undo()
 		result = document:read()
-		
+
 		expect(result.a).to.equal(1)
 	end)
 
-	it("should redo an edit", function() 
+	it("should redo an edit", function()
 		document:edit(function(contents)
 			contents.a += 1
 		end)

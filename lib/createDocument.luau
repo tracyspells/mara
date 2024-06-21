@@ -26,7 +26,7 @@ local function createDocument<C>(initialContents): Document<C>
 	local edits = 0
 
 	local history = createVault(60) :: VaultObject<C>
-	local temporaryHistory:  { VaultItem<C> }
+	local temporaryHistory: { VaultItem<C> }
 
 	local watchdog = Watchdog.new()
 
@@ -117,9 +117,9 @@ local function createDocument<C>(initialContents): Document<C>
 		local oldContents = contents
 		local latestItem = temporaryHistory[#temporaryHistory]
 		local newContents = latestItem.value
-		
+
 		edits = latestItem.id
-		history:push({ id = edits, value = newContents})
+		history:push({ id = edits, value = newContents })
 
 		temporaryHistory = nil :: never
 
