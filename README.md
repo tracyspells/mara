@@ -1,2 +1,2 @@
 ## mara
-A simple state container inspired by [Valtio](https://github.com/pmndrs/valtio).
+A simple state container inspired by [Valtio](https://valtio.pmnd.rs/) and [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction)
