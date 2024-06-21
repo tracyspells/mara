@@ -80,6 +80,14 @@ function Watchdog.new(): WatchdogObject
 			stopObserving()
 		end
 
+		local _, stopObserving = next(observing)
+
+		while stopObserving ~= nil do
+			stopObserving()
+
+			_, stopObserving = next(observing)
+		end
+
 		observing = {}
 		isSleeping = true
 	end
