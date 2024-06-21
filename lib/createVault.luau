@@ -63,9 +63,9 @@ local function createVault<T>(size: number): VaultObject<T>
 
 		if not index then
 			return
+		else
+			return contents[index]
 		end
-
-		return contents[index] :: Item<T>
 	end
 
 	function vault:push(item: Item<T>)
