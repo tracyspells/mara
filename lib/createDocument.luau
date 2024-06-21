@@ -24,13 +24,16 @@ local function createDocument<C>(initialContents): Document<C>
 	local contents = initialContents
 
 	local edits = 0
-
 	local history = createVault(60) :: VaultObject<C>
 	local temporaryHistory: { VaultItem<C> }
 
 	local watchdog = Watchdog.new()
 
-	history:push({ id = edits, value = contents })
+	local function updateContents(newContents, oldContents)
+		contents = newContents
+
+		watchdog:bark(newContents, oldContents)
+	end
 
 	function document:shred()
 		watchdog:sleep()
@@ -79,10 +82,9 @@ local function createDocument<C>(initialContents): Document<C>
 		local oldContents = contents
 
 		if item then
-			contents = item.value
 			edits = previousEdit
 
-			watchdog:bark(contents, oldContents)
+			updateContents(item.value, oldContents)
 		end
 	end
 
@@ -98,10 +100,9 @@ local function createDocument<C>(initialContents): Document<C>
 		local oldContents = contents
 
 		if item then
-			contents = item.value
 			edits = nextEdit
 
-			watchdog:bark(contents, oldContents)
+			updateContents(item.value, oldContents)
 		end
 	end
 
@@ -116,15 +117,13 @@ local function createDocument<C>(initialContents): Document<C>
 
 		local oldContents = contents
 		local latestItem = temporaryHistory[#temporaryHistory]
-		local newContents = latestItem.value
 
 		edits = latestItem.id
-		history:push({ id = edits, value = newContents })
+		history:push({ id = latestItem.id, value = latestItem.value })
+
+		updateContents(latestItem.value, oldContents)
 
 		temporaryHistory = nil :: never
-
-		contents = newContents
-		watchdog:bark(contents, oldContents)
 	end
 
 	function document:undoAll()
@@ -143,8 +142,7 @@ local function createDocument<C>(initialContents): Document<C>
 		edits = 0
 		history:clear()
 
-		contents = initialContents
-		watchdog:bark(contents, oldContents)
+		updateContents(initialContents, oldContents)
 	end
 
 	function document:edit(makeChanges)
@@ -157,14 +155,15 @@ local function createDocument<C>(initialContents): Document<C>
 		end
 
 		if newContents ~= oldContents then
-			contents = newContents
-
 			edits += 1
 			history:push({ id = edits, value = contents })
 
-			watchdog:bark(newContents, oldContents)
+			updateContents(newContents, oldContents)
 		end
 	end
+
+	-- store our initial contents
+	history:push({ id = edits, value = contents })
 
 	return document :: any
 end
