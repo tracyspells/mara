@@ -84,6 +84,63 @@ return function()
 		expect(changes).to.equal(2)
 	end)
 
+	it("should undo an edit", function()
+		document:edit(function(contents)
+			contents.a += 1
+		end)
+
+		local result = document:read()
+
+		expect(result.a).to.equal(2)
+
+		document:undo()
+		result = document:read()
+
+		expect(result.a).to.equal(1)
+	end)
+
+	it("should redo an edit", function()
+		document:edit(function(contents)
+			contents.a += 1
+		end)
+
+		local result = document:read()
+
+		expect(result.a).to.equal(2)
+
+		document:undo()
+		result = document:read()
+
+		expect(result.a).to.equal(1)
+
+		document:redo()
+		result = document:read()
+
+		expect(result.a).to.equal(2)
+	end)
+
+	it("should undo and redo all edits", function()
+		for _ = 1, 50 do
+			document:edit(function(contents)
+				contents.a += 1
+			end)
+		end
+
+		local result = document:read()
+
+		expect(result.a).to.equal(51)
+
+		document:undoAll()
+		result = document:read()
+
+		expect(result.a).to.equal(1)
+
+		document:redoAll()
+		result = document:read()
+
+		expect(result.a).to.equal(51)
+	end)
+
 	it("shouldn't read contents if selection is nil", function()
 		local result = document:read(function(contents)
 			return contents["f"]
