@@ -156,7 +156,7 @@ local function createDocument<C>(initialContents): Document<C>
 
 		if newContents ~= oldContents then
 			edits += 1
-			history:push({ id = edits, value = contents })
+			history:push({ id = edits, value = newContents :: any })
 
 			updateContents(newContents, oldContents)
 		end
