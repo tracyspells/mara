@@ -11,7 +11,7 @@ return function()
 	local document: Document<Contents>
 
 	beforeEach(function()
-		document = createDocument({ a  = 0 })
+		document = createDocument({ a = 0 })
 	end)
 
 	afterEach(function()

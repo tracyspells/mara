@@ -179,7 +179,7 @@ return {
 				parameter.documents.a:edit(function(contents)
 					contents.count += 1
 				end)
-				
+
 				parameter.documents.b:edit(function(contents)
 					contents.count += 1
 				end)

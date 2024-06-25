@@ -84,23 +84,22 @@ local function createVault<T>(size: number): VaultObject<T>
 	return vault :: any
 end
 
-
 local function trackDocumentHistory<C>(document: Document<C>): Document<C>
-    local version = 0
-    local vault = createVault(60) :: VaultObject<C>
+	local version = 0
+	local vault = createVault(60) :: VaultObject<C>
 
 	local isUndoing = false
 	local isRedoing = false
 
-    local connection: Connection
-    connection = document:changed(function(contents)
+	local connection: Connection
+	connection = document:changed(function(contents)
 		if isUndoing or isRedoing then
 			return
 		end
 
-        version += 1
-        vault:push({ id = version, value = contents })
-    end)
+		version += 1
+		vault:push({ id = version, value = contents })
+	end)
 
 	-- store in our initial contents
 	vault:push({ id = version, value = document:read() })
@@ -111,7 +110,7 @@ local function trackDocumentHistory<C>(document: Document<C>): Document<C>
 		vault:clear()
 	end
 
-    function timeline:undo()
+	function timeline:undo()
 		if version <= 0 then
 			return
 		end
@@ -124,7 +123,7 @@ local function trackDocumentHistory<C>(document: Document<C>): Document<C>
 
 			version = previousEdit
 			document:setContents(item.value)
-			
+
 			isUndoing = false
 		end
 	end
@@ -137,7 +136,7 @@ local function trackDocumentHistory<C>(document: Document<C>): Document<C>
 		end
 
 		local item = vault:getItem(nextEdit)
-		
+
 		if item then
 			isRedoing = true
 
@@ -150,7 +149,7 @@ local function trackDocumentHistory<C>(document: Document<C>): Document<C>
 
 	document["_timeline"] = timeline
 
-    return document
+	return document
 end
 
 return trackDocumentHistory

@@ -2,14 +2,13 @@ local types = require(script.Parent.Parent.types)
 
 type Document<C> = types.Document<C>
 
-
 return function()
 	local createDocument = require(script.Parent.Parent.createDocument)
 
 	local document: Document<any>
-	
+
 	beforeEach(function()
-		document = createDocument({ a  = 0 })
+		document = createDocument({ a = 0 })
 	end)
 
 	afterEach(function()

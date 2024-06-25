@@ -11,7 +11,7 @@ return function()
 	local document: Document<Contents>
 
 	beforeEach(function()
-		document = createDocument({ a  = 0 })
+		document = createDocument({ a = 0 })
 	end)
 
 	afterEach(function()
@@ -71,7 +71,7 @@ return function()
 		expect(newContents).to.never.equal(oldContents)
 	end)
 
-	it("should listen to batched edits", function() 
+	it("should listen to batched edits", function()
 		local changes = 0
 
 		document:changed(function()
@@ -85,7 +85,7 @@ return function()
 
 			function(contents)
 				contents["b"] = true
-			end
+			end,
 		})
 
 		expect(changes).to.equal(1)

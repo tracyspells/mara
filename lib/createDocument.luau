@@ -77,7 +77,7 @@ local function createDocument<C>(initialContents): Document<C>
 		if not self["_timeline"] then
 			if IS_STUDIO then
 				local traceback = debug.traceback("Function traceback", 2)
-				
+
 				warn(string.format(TIMELINE_WARNING, ":redo()", traceback))
 			end
 

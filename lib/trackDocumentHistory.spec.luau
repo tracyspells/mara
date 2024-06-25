@@ -7,7 +7,7 @@ type Contents = {
 
 return function()
 	local createDocument = require(script.Parent.createDocument)
-    local trackDocumentHistory = require(script.Parent.trackDocumentHistory)
+	local trackDocumentHistory = require(script.Parent.trackDocumentHistory)
 
 	local document: Document<Contents>
 
@@ -20,91 +20,91 @@ return function()
 	end)
 
 	it("should undo an edit", function()
-        local function selector(contents: Contents): number
-            return contents.a
-        end
+		local function selector(contents: Contents): number
+			return contents.a
+		end
 
 		document:edit(function(contents)
-            contents.a += 1
+			contents.a += 1
 		end)
 
-        local result = document:read(selector)
-        expect(result).to.equal(1)
+		local result = document:read(selector)
+		expect(result).to.equal(1)
 
-        document:undo()
-        result = document:read(selector)
-        expect(result).to.equal(0)
+		document:undo()
+		result = document:read(selector)
+		expect(result).to.equal(0)
 	end)
 
-    it("should redo an edit", function() 
-        local function selector(contents: Contents): number
-            return contents.a
-        end
+	it("should redo an edit", function()
+		local function selector(contents: Contents): number
+			return contents.a
+		end
 
 		document:edit(function(contents)
-            contents.a += 1
+			contents.a += 1
 		end)
 
-        local result = document:read(selector)
-        expect(result).to.equal(1)
+		local result = document:read(selector)
+		expect(result).to.equal(1)
 
-        document:undo()
-        result = document:read(selector)
-        expect(result).to.equal(0)
+		document:undo()
+		result = document:read(selector)
+		expect(result).to.equal(0)
 
-        document:redo()
-        result = document:read(selector)
-        expect(result).to.equal(1)
-    end)
+		document:redo()
+		result = document:read(selector)
+		expect(result).to.equal(1)
+	end)
 
-    it("should revert back to inital contents", function()
-        local function selector(contents: Contents): number
-            return contents.a
-        end
+	it("should revert back to inital contents", function()
+		local function selector(contents: Contents): number
+			return contents.a
+		end
 
-        for _ = 1, 10 do
-            document:edit(function(contents)
-                contents.a += 1
-            end)
-        end
+		for _ = 1, 10 do
+			document:edit(function(contents)
+				contents.a += 1
+			end)
+		end
 
-        local result = document:read(selector)
-        expect(result).to.equal(10)
+		local result = document:read(selector)
+		expect(result).to.equal(10)
 
-        for _ = 1, 10 do
-            document:undo()
-        end
+		for _ = 1, 10 do
+			document:undo()
+		end
 
-        result = document:read(selector)
-        expect(result).to.equal(0)
-    end)
+		result = document:read(selector)
+		expect(result).to.equal(0)
+	end)
 
-    it("should redo all edits to the latest one", function()
-        local function selector(contents: Contents): number
-            return contents.a
-        end
+	it("should redo all edits to the latest one", function()
+		local function selector(contents: Contents): number
+			return contents.a
+		end
 
-        for _ = 1, 10 do
-            document:edit(function(contents)
-                contents.a += 1
-            end)
-        end
+		for _ = 1, 10 do
+			document:edit(function(contents)
+				contents.a += 1
+			end)
+		end
 
-        local result = document:read(selector)
-        expect(result).to.equal(10)
+		local result = document:read(selector)
+		expect(result).to.equal(10)
 
-        for _ = 1, 10 do
-            document:undo()
-        end
+		for _ = 1, 10 do
+			document:undo()
+		end
 
-        result = document:read(selector)
-        expect(result).to.equal(0)
+		result = document:read(selector)
+		expect(result).to.equal(0)
 
-        for _ = 1, 10 do
-            document:redo()
-        end
+		for _ = 1, 10 do
+			document:redo()
+		end
 
-        result = document:read(selector)
-        expect(result).to.equal(10)
-    end)
+		result = document:read(selector)
+		expect(result).to.equal(10)
+	end)
 end
