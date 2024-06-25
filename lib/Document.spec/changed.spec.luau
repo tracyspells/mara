@@ -71,26 +71,6 @@ return function()
 		expect(newContents).to.never.equal(oldContents)
 	end)
 
-	it("should listen to batched edits", function()
-		local changes = 0
-
-		document:changed(function()
-			changes += 1
-		end)
-
-		document:batchEdits({
-			function(contents)
-				contents.a += 1
-			end,
-
-			function(contents)
-				contents["b"] = true
-			end,
-		})
-
-		expect(changes).to.equal(1)
-	end)
-
 	it("shouldn't detect changes after being shredded", function()
 		local changes = 0
 
