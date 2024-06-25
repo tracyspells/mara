@@ -22,8 +22,8 @@ local LOOPS = 100
 
 	Times
 
+	Mara.stapleDocuments: 31 microseconds
 	Mara.createDocument: 44 microseconds
-	Mara.stapleDocuments: 42 microseconds
 
 	Reflex.createProducer:   62 microseconds
 	Reflex.combineProducers: 81 microseconds
@@ -39,10 +39,10 @@ local LOOPS = 100
 return {
 	ParameterGenerator = function()
 		local result = {
-			documents = Mara.stapleDocuments({
+			documents = {
 				a = Mara.createDocument({ count = 0 }),
 				b = Mara.createDocument({ count = 0 }),
-			}),
+			},
 
 			document = Mara.createDocument({
 				a = { count = 0 },
@@ -176,14 +176,12 @@ return {
 
 		["Mara.stapleDocuments"] = function(profiler, parameter)
 			for _ = 1, LOOPS do
-				parameter.documents:edit(function(contents)
-					contents.a = table.clone(contents.a)
-					contents.a.count += 1
+				parameter.documents.a:edit(function(contents)
+					contents.count += 1
 				end)
-
-				parameter.documents:edit(function(contents)
-					contents.b = table.clone(contents.b)
-					contents.b.count += 1
+				
+				parameter.documents.b:edit(function(contents)
+					contents.count += 1
 				end)
 			end
 		end,
