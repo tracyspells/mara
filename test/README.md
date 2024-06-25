@@ -3,6 +3,7 @@
 To Build:
 
 - Clone this repository
+- Run `aftman install`
 - Run `wally install`
 - Run `wally install` in the `test` directory
 - Run `rojo build test/default.project.json --output test/build.rbxl`
