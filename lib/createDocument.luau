@@ -1,18 +1,21 @@
 --!native
 
+local RunService = game:GetService("RunService")
+
 local Watchdog = require(script.Parent.Watchdog)
-local None = require(script.Parent.None)
 local types = require(script.Parent.types)
 local isStrictTable = require(script.Parent.utils.isStrictTable)
-local createVault = require(script.Parent.createVault)
 
 local copy = table.clone
 
+local IS_STUDIO = RunService:IsStudio()
+local TIMELINE_WARNING = [[
+	The method `%s` cannot be used without calling `trackDocumentHistory` first!
+	%s
+]]
+
 type Document<C> = types.Document<C>
 type Connection = types.Connection
-
-type VaultObject<T> = createVault.VaultObject<T>
-type VaultItem<T> = createVault.Item<T>
 
 local function createDocument<C>(initialContents): Document<C>
 	assert(
@@ -23,29 +26,65 @@ local function createDocument<C>(initialContents): Document<C>
 	local document = {}
 	local contents = initialContents
 
-	local edits = 0
-	local history = createVault(60) :: VaultObject<C>
-	local temporaryHistory: { VaultItem<C> }
-
 	local watchdog = Watchdog.new()
-
-	local function updateContents(newContents, oldContents)
-		contents = newContents
-
-		watchdog:bark(newContents, oldContents)
-	end
 
 	function document:shred()
 		watchdog:sleep()
-		history:clear()
 
-		if temporaryHistory then
-			temporaryHistory = nil :: never
+		if self["_timeline"] then
+			self._timeline:wipe()
 		end
 	end
 
 	function document:read(selector)
 		return if selector then selector(contents) else contents
+	end
+
+	function document:setContents(newContents)
+		if not newContents then
+			return
+		end
+
+		if not isStrictTable(newContents) then
+			error(`Documents must be based on tables with no existing metatables. Got {typeof(initialContents)}`)
+		end
+
+		local oldContents = contents
+		contents = newContents
+
+		watchdog:bark(contents, oldContents)
+	end
+
+	function document:resetContents()
+		self:setContents(initialContents)
+	end
+
+	function document:undo()
+		if not self["_timeline"] then
+			if IS_STUDIO then
+				local traceback = debug.traceback("Function traceback", 2)
+
+				warn(string.format(TIMELINE_WARNING, ":undo()", traceback))
+			end
+
+			return
+		end
+
+		self._timeline:undo()
+	end
+
+	function document:redo()
+		if not self["_timeline"] then
+			if IS_STUDIO then
+				local traceback = debug.traceback("Function traceback", 2)
+				
+				warn(string.format(TIMELINE_WARNING, ":redo()", traceback))
+			end
+
+			return
+		end
+
+		self._timeline:redo()
 	end
 
 	function document:changed(callback)
@@ -71,99 +110,45 @@ local function createDocument<C>(initialContents): Document<C>
 		}
 	end
 
-	function document:undo()
-		if edits <= 0 then
-			return
+	function document:batchEdits(edits)
+		if not isStrictTable(edits) then
+			error(`The 'edits' argument must be a table, got {typeof(edits)}`)
 		end
 
-		local previousEdit = math.clamp(edits - 1, 0, history:getSize())
-		local item = history:getItem(previousEdit)
-
-		local oldContents = contents
-
-		if item then
-			edits = previousEdit
-
-			updateContents(item.value, oldContents)
-		end
-	end
-
-	function document:redo()
-		local nextEdit = edits + 1
-
-		if nextEdit >= history:getSize() then
-			return
-		end
-
-		local item = history:getItem(nextEdit)
-
-		local oldContents = contents
-
-		if item then
-			edits = nextEdit
-
-			updateContents(item.value, oldContents)
-		end
-	end
-
-	function document:redoAll()
-		if edits > 0 then
-			return
-		end
-
-		if not temporaryHistory then
+		if #edits <= 1 then
 			return
 		end
 
 		local oldContents = contents
-		local latestItem = temporaryHistory[#temporaryHistory]
+		local newContents = copy(contents)
 
-		edits = latestItem.id
-		history:push({ id = latestItem.id, value = latestItem.value })
+		for index = 1, #edits do
+			local makeChanges = edits[index]
 
-		updateContents(latestItem.value, oldContents)
+			if typeof(makeChanges) ~= "function" then
+				continue
+			end
 
-		temporaryHistory = nil :: never
-	end
-
-	function document:undoAll()
-		if edits <= 0 then
-			return
+			makeChanges(newContents)
 		end
 
-		local oldContents = contents
-
-		if temporaryHistory then
-			temporaryHistory = nil :: never
+		if newContents ~= oldContents then
+			contents = newContents
+			watchdog:bark(contents, oldContents)
 		end
-
-		temporaryHistory = copy(history:getContents())
-
-		edits = 0
-		history:clear()
-
-		updateContents(initialContents, oldContents)
 	end
 
 	function document:edit(makeChanges)
 		local oldContents = contents
 		local newContents = copy(contents)
 
-		local changes = makeChanges(newContents)
-		if changes == None then
-			newContents = oldContents
-		end
+		makeChanges(newContents)
 
 		if newContents ~= oldContents then
-			edits += 1
-			history:push({ id = edits, value = newContents :: any })
-
-			updateContents(newContents, oldContents)
+			contents = newContents
+			watchdog:bark(contents, oldContents)
 		end
 	end
-
-	-- store our initial contents
-	history:push({ id = edits, value = contents })
 
 	return document :: any
 end
