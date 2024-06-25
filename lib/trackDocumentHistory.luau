@@ -1,9 +1,14 @@
-export type Item<T> = {
+local types = require(script.Parent.types)
+
+type Document<C> = types.Document<C>
+type Connection = types.Connection
+
+type Item<T> = {
 	id: number,
 	value: T,
 }
 
-export type VaultObject<T> = {
+type VaultObject<T> = {
 	getSize: (self: VaultObject<T>) -> number,
 	getContents: (self: VaultObject<T>) -> { Item<T> },
 	clear: (self: VaultObject<T>) -> (),
@@ -79,4 +84,72 @@ local function createVault<T>(size: number): VaultObject<T>
 	return vault :: any
 end
 
-return createVault
+local function trackDocumentHistory<C>(document: Document<C>): Document<C>
+	local version = 0
+	local vault = createVault(60) :: VaultObject<C>
+
+	local isUndoing = false
+	local isRedoing = false
+
+	local connection: Connection
+	connection = document:changed(function(contents)
+		if isUndoing or isRedoing then
+			return
+		end
+
+		version += 1
+		vault:push({ id = version, value = contents })
+	end)
+
+	-- store in our initial contents
+	vault:push({ id = version, value = document:read() })
+
+	local timeline = {}
+	function timeline:wipe()
+		connection:Disconnect()
+		vault:clear()
+	end
+
+	function timeline:undo()
+		if version <= 0 then
+			return
+		end
+
+		local previousEdit = math.clamp(version - 1, 0, vault:getSize())
+		local item = vault:getItem(previousEdit)
+
+		if item then
+			isUndoing = true
+
+			version = previousEdit
+			document:setContents(item.value)
+
+			isUndoing = false
+		end
+	end
+
+	function timeline:redo()
+		local nextEdit = version + 1
+
+		if nextEdit > vault:getSize() then
+			return
+		end
+
+		local item = vault:getItem(nextEdit)
+
+		if item then
+			isRedoing = true
+
+			version = nextEdit
+			document:setContents(item.value)
+
+			isRedoing = false
+		end
+	end
+
+	document["_timeline"] = timeline
+
+	return document
+end
+
+return trackDocumentHistory

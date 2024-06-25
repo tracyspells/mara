@@ -9,17 +9,18 @@ export type Dictionary = { [any]: any }
 export type Document<C = any> = {
 	shred: (self: Document<C>) -> (),
 	changed: (self: Document<C>, callback: (C, C) -> ()) -> Connection,
-	read: (self: Document<C>, selector: ((contents: C) -> C)?) -> C,
-	edit: (self: Document<C>, makeChanges: (contents: C) -> () | None) -> (),
-	undoAll: (self: Document<C>) -> (),
+	read: (self: Document<C>, selector: Selector<C>?) -> C,
+	edit: (self: Document<C>, makeChanges: Editor<C>) -> (),
+	batchEdits: (self: Document<C>, edits: { Editor<C> }) -> (),
+	setContents: (self: Document<C>, newContents: any) -> (),
+	resetContents: (self: Document<C>) -> (),
 	undo: (self: Document<C>) -> (),
 	redo: (self: Document<C>) -> (),
-	redoAll: (self: Document<C>) -> (),
 }
 
-export type DocumentMap = { [string]: Document<any> }
+export type Editor<C> = (contents: C) -> ()
 
-export type None = typeof(newproxy(true)) & { [string]: any }
+export type DocumentMap = { [string]: Document<any> }
 
 export type Selector<T> = (T) -> any
 export type PrimitiveSelector<T> = (T) -> string | number | boolean
