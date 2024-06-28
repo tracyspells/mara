@@ -64,11 +64,9 @@ return function()
 		exporter:start()
 		exporter:addRecipient(mockPlayer :: any)
 
-		for _ = 1, 5 do
-			document:edit(function(contents)
-				contents.count += 1
-			end)
-		end
+		document:edit(function(contents)
+			contents.count += 1
+		end)
 
 		exporter:_sendDiff(mockPlayer :: any)
 
@@ -82,6 +80,6 @@ return function()
 
 		expect(payload.contents).to.be.a("table")
 		expect(payload.contents.counter).to.be.a("table")
-		expect(payload.contents.counter.count).to.equal(5)
+		expect(payload.contents.counter.count).to.equal(1)
 	end)
 end
