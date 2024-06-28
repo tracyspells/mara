@@ -4,7 +4,7 @@ export type Connection = {
 	Destroy: (self: Connection) -> (),
 }
 
-export type Dictionary = { [any]: any }
+export type Dictionary<K, V> = { [K]: V }
 
 export type Document<C = any> = {
 	shred: (self: Document<C>) -> (),
@@ -20,7 +20,7 @@ export type Document<C = any> = {
 
 export type Editor<C> = (contents: C) -> ()
 
-export type DocumentMap = { [string]: Document<any> }
+export type DocumentMap = Dictionary<string, Document>
 
 export type Selector<T> = (T) -> any
 export type PrimitiveSelector<T> = (T) -> string | number | boolean
@@ -28,5 +28,24 @@ export type Predicate<C> = (C, C) -> boolean
 export type Listener<C> = (C, C) -> ()
 
 export type CompareFunction = (a: any, b: any) -> boolean
+
+export type NetworkPayload = { 
+	type: "diff" | "full",
+	contents: Dictionary<string, any>
+ }
+
+export type Importer = {
+	import: (self: Importer, payload: NetworkPayload) -> (),
+}
+
+export type Exporter = {
+	addRecipient: (self: Exporter, player: Player) -> (),
+	start: (self: Exporter) -> (),
+	stop: (self: Exporter) -> (),
+}
+
+export type MockExporter = Exporter & {
+	sendPatch: (self: MockExporter, player: Player) -> ()
+}
 
 return nil
