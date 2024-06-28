@@ -1,0 +1,9 @@
+[package]
+name = "mara/networking"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+private = true
+
+[dependencies]
+Remo = "littensy/remo@1.4.0"
