@@ -9,10 +9,10 @@ local utils = script.Parent.Parent.utils
 local difference = require(utils.difference)
 local isStrictTable = require(utils.isStrictTable)
 
-local IS_SERVER = RunService:IsServer()
+local copy = table.clone
 
+local IS_SERVER = RunService:IsServer()
 local IS_TESTING = RunService:IsStudio() and RunService:IsRunning()
-local IS_TEST_EZ = RunService:IsStudio() and RunService:IsEdit()
 
 local ERROR_MESSAGES = {
 	Initialize = "'Mara.getExporter()' must be called from the server!",
@@ -25,11 +25,7 @@ type NetworkPayload = types.NetworkPayload
 
 type MockExporter = types.MockExporter
 type Exporter = types.Exporter
-type ExporterOptions = {
-	documents: DocumentMap,
-	onExport: (player: Player, payload: NetworkPayload) -> (),
-	interval: number?,
-}
+type ExporterOptions = types.ExporterOptions
 
 type DocumentMap = types.DocumentMap
 
@@ -50,8 +46,8 @@ local function getExporter(options: ExporterOptions): Exporter
 
 	local playersConnected: Set<Player> = {}
 
-	local currentContents: Contents = {}
-	local latestContents: Contents = {}
+	local documentContents: Contents = {}
+	local documentContentSnapshot: Contents = {}
 	local changed = false
 
 	local connections: Connections = {}
@@ -81,12 +77,13 @@ local function getExporter(options: ExporterOptions): Exporter
 		-- step 1: get our document contents and
 		-- setup connections for content changes
 		for name, document in documents do
-			currentContents[name] = document:read()
+			documentContents[name] = document:read()
+			documentContentSnapshot[name] = documentContents[name]
 
 			table.insert(
 				connections,
 				document:changed(function(contents)
-					latestContents[name] = contents
+					documentContents[name] = contents
 					changed = true
 				end)
 			)
@@ -98,9 +95,9 @@ local function getExporter(options: ExporterOptions): Exporter
 				return
 			end
 
-			local diff = difference(latestContents, currentContents) :: Contents
+			local diff = difference(documentContentSnapshot, documentContents) :: Contents
 
-			currentContents = latestContents -- store our new state here to use against our next state
+			documentContentSnapshot = copy(documentContents) -- store our new state here to use against our next state
 			changed = false
 
 			for player in playersConnected do
@@ -138,32 +135,30 @@ local function getExporter(options: ExporterOptions): Exporter
 
 		playersConnected[player] = true
 
-		onExport(player, { type = "full", contents = currentContents })
+		onExport(player, { type = "full", contents = documentContents })
 	end
 
-	if IS_TESTING or IS_TEST_EZ then
-		(exporter :: MockExporter).sendDiff = function(_, player)
-			if not started then
-				error(string.format(ERROR_MESSAGES.Start, "sendPatch"))
-			end
-
-			local isConnected = playersConnected[player]
-
-			if not isConnected then
-				return
-			end
-
-			if not changed then
-				return
-			end
-
-			local diff = difference(latestContents, currentContents) :: Contents
-
-			currentContents = latestContents
-			changed = false
-
-			onExport(player, { type = "diff", contents = diff })
+	(exporter :: MockExporter)._sendDiff = function(_, player)
+		if not started then
+			error(string.format(ERROR_MESSAGES.Start, "sendPatch"))
 		end
+
+		local isConnected = playersConnected[player]
+
+		if not isConnected then
+			return
+		end
+
+		if not changed then
+			return
+		end
+
+		local diff = difference(documentContentSnapshot, documentContents) :: Contents
+
+		documentContentSnapshot = copy(documentContents) -- store our new state here to use against our next state
+		changed = false
+
+		onExport(player, { type = "diff", contents = diff })
 	end
 
 	return exporter

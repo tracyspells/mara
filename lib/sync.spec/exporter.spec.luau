@@ -70,7 +70,7 @@ return function()
 			end)
 		end
 
-		exporter:sendDiff(mockPlayer :: any)
+		exporter:_sendDiff(mockPlayer :: any)
 
 		expect(resultPlayer).to.equal(mockPlayer)
 
