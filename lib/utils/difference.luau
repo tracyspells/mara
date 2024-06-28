@@ -5,7 +5,7 @@ local copy = table.clone
 
 type AnyDictionary = types.AnyDictionary
 
-local function difference<N, O>(new: N & AnyDictionary, old: O & AnyDictionary): AnyDictionary?
+local function difference<O, N>(old: O & AnyDictionary, new: O & AnyDictionary): AnyDictionary?
 	if not old then
 		return copy(new)
 	end
@@ -20,7 +20,7 @@ local function difference<N, O>(new: N & AnyDictionary, old: O & AnyDictionary):
 		elseif other == nil then
 			result[key] = None
 		elseif typeof(value) == "table" and typeof(other) == "table" then
-			result[key] = difference(other, value)
+			result[key] = difference(value, other)
 		end
 	end
 
