@@ -10,6 +10,8 @@ export type Document<C> = types.Document<C>
 export type Exporter = types.Exporter
 export type Importer = types.Importer
 
+export type NetworkPayload = types.NetworkPayload
+
 return {
 	createDocument = createDocument,
 	createSelector = createSelector,
