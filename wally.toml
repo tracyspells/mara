@@ -1,6 +1,6 @@
 [package]
 name = "tracyspells/mara"
-version = "0.4.1"
+version = "2.0.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
