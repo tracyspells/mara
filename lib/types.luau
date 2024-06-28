@@ -29,10 +29,10 @@ export type Listener<C> = (C, C) -> ()
 
 export type CompareFunction = (a: any, b: any) -> boolean
 
-export type NetworkPayload = { 
+export type NetworkPayload = {
 	type: "diff" | "full",
-	contents: Dictionary<string, any>
- }
+	contents: Dictionary<string, any>,
+}
 
 export type Importer = {
 	import: (self: Importer, payload: NetworkPayload) -> (),
@@ -45,7 +45,7 @@ export type Exporter = {
 }
 
 export type MockExporter = Exporter & {
-	sendPatch: (self: MockExporter, player: Player) -> ()
+	sendPatch: (self: MockExporter, player: Player) -> (),
 }
 
 return nil
