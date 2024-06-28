@@ -39,7 +39,7 @@ type Connections = { Connection }
 type Dictionary<K, V> = types.Dictionary<K, V>
 type Set<T> = { [T]: boolean }
 
-local function exporter(options: ExporterOptions): Exporter
+local function getExporter(options: ExporterOptions): Exporter
 	if not isStrictTable(options) then
 		error(string.format(ERROR_MESSAGES.Options, typeof(options)))
 	end
@@ -60,7 +60,7 @@ local function exporter(options: ExporterOptions): Exporter
 	local documents = options.documents
 	local onExport = options.onExport
 
-	local self = {} :: Exporter
+	local exporter = {} :: Exporter
 	local started = false
 
 	Players.PlayerRemoving:Connect(function(player)
@@ -69,7 +69,7 @@ local function exporter(options: ExporterOptions): Exporter
 		end
 	end)
 
-	function self:start()
+	function exporter:start()
 		if started then
 			warn("'exporter:start()' already started!")
 
@@ -109,7 +109,7 @@ local function exporter(options: ExporterOptions): Exporter
 		end, options.interval)
 	end
 
-	function self:stop()
+	function exporter:stop()
 		if not started then
 			error(string.format(ERROR_MESSAGES.Start, "stop"))
 		end
@@ -125,7 +125,7 @@ local function exporter(options: ExporterOptions): Exporter
 		table.clear(connections)
 	end
 
-	function self:addRecipient(player)
+	function exporter:addRecipient(player)
 		if not started then
 			error(string.format(ERROR_MESSAGES.Start, "addRecipient"))
 		end
@@ -142,7 +142,7 @@ local function exporter(options: ExporterOptions): Exporter
 	end
 
 	if IS_TESTING or IS_TEST_EZ then
-		(self :: MockExporter).sendPatch = function(self, player)
+		(exporter :: MockExporter).sendPatch = function(_, player)
 			if not started then
 				error(string.format(ERROR_MESSAGES.Start, "sendPatch"))
 			end
@@ -168,7 +168,7 @@ local function exporter(options: ExporterOptions): Exporter
 		end
 	end
 
-	return self
+	return exporter
 end
 
-return exporter
+return getExporter

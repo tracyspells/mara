@@ -22,7 +22,7 @@ type DocumentMap = types.DocumentMap
 
 type Dictionary<K, V> = types.Dictionary<K, V>
 
-local function importer(documents: DocumentMap): Importer
+local function getImporter(documents: DocumentMap): Importer
 	if not isStrictTable(documents) then
 		error(ERROR_MESSAGES.Documents)
 	end
@@ -31,9 +31,9 @@ local function importer(documents: DocumentMap): Importer
 		error(ERROR_MESSAGES.Initialize)
 	end
 
-	local self = {} :: Importer
+	local importer = {} :: Importer
 
-	function self:import(payload)
+	function importer:import(payload)
 		local contents = payload.contents
 		local payloadType = payload.type
 
@@ -52,7 +52,7 @@ local function importer(documents: DocumentMap): Importer
 		end
 	end
 
-	return self
+	return importer
 end
 
-return importer
+return getImporter
