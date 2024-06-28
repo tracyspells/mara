@@ -162,9 +162,7 @@ local function getExporter(options: ExporterOptions): Exporter
 			currentContents = latestContents
 			changed = false
 
-			for player in playersConnected do
-				onExport(player, { type = "diff", contents = diff })
-			end
+			onExport(player, { type = "diff", contents = diff })
 		end
 	end
 
