@@ -142,7 +142,7 @@ local function getExporter(options: ExporterOptions): Exporter
 	end
 
 	if IS_TESTING or IS_TEST_EZ then
-		(exporter :: MockExporter).sendPatch = function(_, player)
+		(exporter :: MockExporter).sendDiff = function(_, player)
 			if not started then
 				error(string.format(ERROR_MESSAGES.Start, "sendPatch"))
 			end

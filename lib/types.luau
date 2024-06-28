@@ -45,7 +45,7 @@ export type Exporter = {
 }
 
 export type MockExporter = Exporter & {
-	sendPatch: (self: MockExporter, player: Player) -> (),
+	sendDiff: (self: MockExporter, player: Player) -> (),
 }
 
 return nil
