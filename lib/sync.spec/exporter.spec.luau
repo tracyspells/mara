@@ -13,35 +13,35 @@ type Contents = {
 }
 
 return function()
-    local mockPlayer = { __test = true }
+	local mockPlayer = { __test = true }
 
-    local resultPlayer: any
-    local payload: NetworkPayload
+	local resultPlayer: any
+	local payload: NetworkPayload
 
-    local exporter: MockExporter
-    local document: Document<Contents>
+	local exporter: MockExporter
+	local document: Document<Contents>
 
-    beforeEach(function()
-        document = createDocument({ count = 0 })
+	beforeEach(function()
+		document = createDocument({ count = 0 })
 
 		local function onExport(...)
-            resultPlayer, payload = ...
+			resultPlayer, payload = ...
 		end
 
 		exporter = sync.exporter({
 			documents = { counter = document },
-            interval = -1,
+			interval = -1,
 			onExport = onExport,
 		}) :: MockExporter
-    end)
+	end)
 
-    afterEach(function()
-        resultPlayer = nil
-        payload = nil :: never
+	afterEach(function()
+		resultPlayer = nil
+		payload = nil :: never
 
-        exporter:stop()  
-        document:shred()
-    end)
+		exporter:stop()
+		document:shred()
+	end)
 
 	it("should send full document contents to players", function()
 		exporter:start()
@@ -49,7 +49,7 @@ return function()
 
 		expect(resultPlayer).to.equal(mockPlayer)
 
-        expect(payload).to.be.ok()
+		expect(payload).to.be.ok()
 		expect(payload).to.be.a("table")
 
 		expect(payload.type).to.be.a("string")
@@ -70,15 +70,15 @@ return function()
 			end)
 		end
 
-        exporter:sendPatch(mockPlayer :: any)
+		exporter:sendPatch(mockPlayer :: any)
 
-        expect(resultPlayer).to.equal(mockPlayer)
+		expect(resultPlayer).to.equal(mockPlayer)
 
-        expect(payload).to.be.ok()
-        expect(payload).to.be.a("table")
+		expect(payload).to.be.ok()
+		expect(payload).to.be.a("table")
 
-        expect(payload.type).to.be.a("string")
-        expect(payload.type).to.equal("diff")
+		expect(payload.type).to.be.a("string")
+		expect(payload.type).to.equal("diff")
 
 		expect(payload.contents).to.be.a("table")
 		expect(payload.contents.counter).to.be.a("table")

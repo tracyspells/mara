@@ -1,7 +1,7 @@
 local None = newproxy(true)
 
 getmetatable(None).__tostring = function()
-    return "None"
+	return "None"
 end
 
 return None

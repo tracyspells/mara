@@ -1,7 +1,7 @@
 return function()
-    local sync = require(script.Parent.sync)
+	local sync = require(script.Parent.sync)
 
-    it("should load", function() 
-        expect(sync).to.be.ok() 
-    end)
+	it("should load", function()
+		expect(sync).to.be.ok()
+	end)
 end

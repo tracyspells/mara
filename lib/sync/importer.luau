@@ -10,11 +10,11 @@ local IS_CLIENT = RunService:IsClient()
 local IS_TESTING = RunService:IsStudio() and RunService:IsRunning()
 
 local ERROR_MESSAGES = {
-    Initialize = "'Mara.getImporter()' must be called from the client!",
-    Documents = [[
+	Initialize = "'Mara.getImporter()' must be called from the client!",
+	Documents = [[
         The 'documents' argument in 'Mara.getImporter()' must be a map of documents!
         (i.e. { [string]: Document<any> })
-    ]]
+    ]],
 }
 
 type Importer = types.Importer
@@ -23,36 +23,36 @@ type DocumentMap = types.DocumentMap
 type Dictionary<K, V> = types.Dictionary<K, V>
 
 local function importer(documents: DocumentMap): Importer
-    if not isStrictTable(documents) then
-        error(ERROR_MESSAGES.Documents)
-    end
+	if not isStrictTable(documents) then
+		error(ERROR_MESSAGES.Documents)
+	end
 
-    if not IS_TESTING and not IS_CLIENT then
-        error(ERROR_MESSAGES.Initialize)
-    end
+	if not IS_TESTING and not IS_CLIENT then
+		error(ERROR_MESSAGES.Initialize)
+	end
 
-    local self = {} :: Importer
+	local self = {} :: Importer
 
-    function self:import(payload)
-        local contents = payload.contents
-        local payloadType = payload.type
+	function self:import(payload)
+		local contents = payload.contents
+		local payloadType = payload.type
 
-        for name, document in documents do
-            local result
+		for name, document in documents do
+			local result
 
-            if payloadType == "full" then
-                result = contents[name]
-            else
-                result = applyDifference(document:read(), contents[name])
-            end
+			if payloadType == "full" then
+				result = contents[name]
+			else
+				result = applyDifference(document:read(), contents[name])
+			end
 
-            if result then
-                document:setContents(result)   
-            end
-        end
-    end
+			if result then
+				document:setContents(result)
+			end
+		end
+	end
 
-    return self
+	return self
 end
 
 return importer
