@@ -14,10 +14,10 @@ local TIMELINE_WARNING = [[
 	%s
 ]]
 
-type Document<C> = types.Document<C>
+type Document<Contents> = types.Document<Contents>
 type Connection = types.Connection
 
-local function createDocument<C>(initialContents): Document<C>
+local function createDocument<Contents>(initialContents): Document<Contents>
 	assert(
 		isStrictTable(initialContents),
 		`Documents must be based on tables with no existing metatables. Got {typeof(initialContents)}`

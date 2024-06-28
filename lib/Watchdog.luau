@@ -1,4 +1,4 @@
-type Callback = (...any?) -> ()
+type Callback = (...any) -> ()
 type GenericCallback = () -> ()
 
 type Entity = {

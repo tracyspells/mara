@@ -3,21 +3,17 @@ local types = require(script.Parent.Parent.types)
 
 local copy = table.clone
 
-type AnyTable = types.Dictionary<any, any>
+type AnyDictionary = types.AnyDictionary
 
-local function difference<N, O>(new: N & AnyTable, old: O & AnyTable): AnyTable?
-	if old == new then
-		return
-	end
-
+local function difference<N, O>(new: N & AnyDictionary, old: O & AnyDictionary): AnyDictionary?
 	if not old then
 		return copy(new)
 	end
 
 	local result = copy(new)
 
-	for key, value in old :: AnyTable do
-		local other = (new :: AnyTable)[key]
+	for key, value in old :: AnyDictionary do
+		local other = (new :: AnyDictionary)[key]
 
 		if value == other then
 			result[key] = nil
