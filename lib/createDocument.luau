@@ -1,5 +1,3 @@
---!native
-
 local RunService = game:GetService("RunService")
 
 local Watchdog = require(script.Parent.Watchdog)
@@ -9,15 +7,17 @@ local isStrictTable = require(script.Parent.utils.isStrictTable)
 local copy = table.clone
 
 local IS_STUDIO = RunService:IsStudio()
+local IS_TESTING = IS_STUDIO and RunService:IsRunning()
+
 local TIMELINE_WARNING = [[
 	The method `%s` cannot be used without calling `trackDocumentHistory` first!
 	%s
 ]]
 
-type Document<C> = types.Document<C>
+type Document<Contents> = types.Document<Contents>
 type Connection = types.Connection
 
-local function createDocument<C>(initialContents): Document<C>
+local function createDocument<Contents>(initialContents): Document<Contents>
 	assert(
 		isStrictTable(initialContents),
 		`Documents must be based on tables with no existing metatables. Got {typeof(initialContents)}`
@@ -61,7 +61,7 @@ local function createDocument<C>(initialContents): Document<C>
 
 	function document:undo()
 		if not self["_timeline"] then
-			if IS_STUDIO then
+			if IS_TESTING then
 				local traceback = debug.traceback("Function traceback", 2)
 
 				warn(string.format(TIMELINE_WARNING, ":undo()", traceback))
@@ -75,7 +75,7 @@ local function createDocument<C>(initialContents): Document<C>
 
 	function document:redo()
 		if not self["_timeline"] then
-			if IS_STUDIO then
+			if IS_TESTING then
 				local traceback = debug.traceback("Function traceback", 2)
 
 				warn(string.format(TIMELINE_WARNING, ":redo()", traceback))
@@ -112,7 +112,7 @@ local function createDocument<C>(initialContents): Document<C>
 
 	function document:batchEdits(edits)
 		if not isStrictTable(edits) then
-			error(`The 'edits' argument must be a table, got {typeof(edits)}`)
+			error(`The 'edits' argument in ':batchEdits()' must be an array, got {typeof(edits)}`)
 		end
 
 		if #edits <= 1 then

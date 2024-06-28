@@ -4,29 +4,58 @@ export type Connection = {
 	Destroy: (self: Connection) -> (),
 }
 
-export type Dictionary = { [any]: any }
+export type Dictionary<K, V> = { [K]: V }
+export type AnyDictionary = Dictionary<any, any>
 
-export type Document<C = any> = {
-	shred: (self: Document<C>) -> (),
-	changed: (self: Document<C>, callback: (C, C) -> ()) -> Connection,
-	read: (self: Document<C>, selector: Selector<C>?) -> C,
-	edit: (self: Document<C>, makeChanges: Editor<C>) -> (),
-	batchEdits: (self: Document<C>, edits: { Editor<C> }) -> (),
-	setContents: (self: Document<C>, newContents: any) -> (),
-	resetContents: (self: Document<C>) -> (),
-	undo: (self: Document<C>) -> (),
-	redo: (self: Document<C>) -> (),
+export type Document<Contents = AnyDictionary> = {
+	shred: (self: Document<Contents>) -> (),
+	changed: (self: Document<Contents>, callback: Listener<Contents>) -> Connection,
+
+	read: ((self: Document<Contents>) -> Contents)
+		& (<Selection>(self: Document<Contents>, selector: Selector<Contents, Selection>) -> Selection),
+
+	edit: (self: Document<Contents>, makeChanges: Editor<Contents>) -> (),
+	batchEdits: (self: Document<Contents>, edits: { Editor<Contents> }) -> (),
+	setContents: (self: Document<Contents>, newContents: any) -> (),
+	resetContents: (self: Document<Contents>) -> (),
+	undo: (self: Document<Contents>) -> (),
+	redo: (self: Document<Contents>) -> (),
 }
 
-export type Editor<C> = (contents: C) -> ()
+export type Editor<Contents> = (contents: Contents) -> ()
 
-export type DocumentMap = { [string]: Document<any> }
+export type DocumentMap = Dictionary<string, Document>
 
-export type Selector<T> = (T) -> any
-export type PrimitiveSelector<T> = (T) -> string | number | boolean
-export type Predicate<C> = (C, C) -> boolean
-export type Listener<C> = (C, C) -> ()
+export type Selector<Input, Output> = (Input) -> Output
+export type PrimitiveSelector<Input, Output> = (Input) -> Output & (string | number | boolean)
+export type Predicate<A, B> = (A, B) -> boolean
+export type Listener<T> = (T, T) -> ()
 
 export type CompareFunction = (a: any, b: any) -> boolean
+
+export type NetworkPayload = {
+	type: "diff" | "full",
+	contents: Dictionary<string, any>,
+}
+
+export type Importer = {
+	import: (self: Importer, payload: NetworkPayload) -> (),
+}
+
+export type Exporter = {
+	addRecipient: (self: Exporter, player: Player) -> (),
+	start: (self: Exporter) -> (),
+	stop: (self: Exporter) -> (),
+}
+
+export type ExporterOptions = {
+	documents: DocumentMap,
+	onExport: (player: Player, payload: NetworkPayload) -> (),
+	interval: number?,
+}
+
+export type MockExporter = Exporter & {
+	_sendDiff: (self: MockExporter, player: Player) -> (),
+}
 
 return nil

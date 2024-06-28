@@ -1,6 +1,7 @@
 local types = require(script.Parent.types)
 
 type Document<C> = types.Document<C>
+type Selector<I, O> = types.Selector<I, O>
 type Contents = {
 	a: number,
 }
@@ -9,6 +10,10 @@ return function()
 	local createDocument = require(script.Parent.createDocument)
 
 	local document: Document<Contents>
+
+	local function selector(contents: Contents): number
+		return contents.a
+	end
 
 	beforeEach(function()
 		document = createDocument({ a = 0 })
@@ -31,17 +36,15 @@ return function()
 	end)
 
 	it("should read contents", function()
-		local result = document:read()
+		local resultA = document:read()
 
-		expect(result).to.be.a("table")
-		expect(result.a).to.equal(0)
+		expect(resultA).to.be.a("table")
+		expect(resultA.a).to.equal(0)
 
-		result = document:read(function(contents)
-			return contents.a
-		end)
+		local resultB = document:read(selector)
 
-		expect(result).to.be.a("number")
-		expect(result).to.equal(0)
+		expect(resultB).to.be.a("number")
+		expect(resultB).to.equal(0)
 	end)
 
 	it("should edit contents", function()

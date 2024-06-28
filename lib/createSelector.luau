@@ -2,7 +2,7 @@ local types = require(script.Parent.types)
 local shallowEquals = require(script.Parent.utils.shallowEquals)
 
 type CompareFunction = types.CompareFunction
-type Selector<T> = types.Selector<T>
+type Selector<Input, Output> = types.Selector<Input, Output>
 type EqualityOptions = {
 	equalityCheck: CompareFunction?,
 	resultEqualityCheck: CompareFunction?,
@@ -53,7 +53,7 @@ local function memoize<Args...>(fn: (Args...) -> any?, equalityFunc: CompareFunc
 end
 
 local function createSelector(
-	inputSelectors: { Selector<any> },
+	inputSelectors: { Selector<any, any> },
 	combiner: (...any) -> any?,
 	optionsOrEqualityCheck: EqualityOptions | CompareFunction
 ): (...any) -> any

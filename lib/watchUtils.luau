@@ -24,13 +24,13 @@ local TEST_WARNING = [[
 	%s
 ]]
 
-type Document<C> = types.Document<C>
+type Document<Contents> = types.Document<Contents>
 type Connection = types.Connection
 
-type Selector<T> = types.Selector<T>
-type PrimitiveSelector<T> = types.PrimitiveSelector<T>
-type Predicate<C> = types.Predicate<C>
-type Listener<C> = types.Listener<C>
+type Selector<Input, Output> = types.Selector<Input, Output>
+type PrimitiveSelector<Input, Output> = types.PrimitiveSelector<Input, Output>
+type Predicate<A, B> = types.Predicate<A, B>
+type Listener<T> = types.Listener<T>
 
 local function isPrimitive(value: any): boolean
 	if value ~= nil and isStrictTable(value) == false and table.find(PRIMITIVES, typeof(value)) ~= nil then
@@ -40,22 +40,7 @@ local function isPrimitive(value: any): boolean
 	return false
 end
 
-local function getWatchFuncArguments<C>(...: any): (Selector<C>?, Predicate<C>?, Listener<C>)
-	local arguments = select("#", ...)
-	local selector: Selector<C>, predicate: Predicate<C>, listener: Listener<C>
-
-	if arguments >= 3 then
-		selector, predicate, listener = ...
-	elseif arguments == 2 then
-		selector, listener = ...
-	else
-		listener = ...
-	end
-
-	return selector, predicate, listener
-end
-
-local function testSelector<T>(selector: Selector<T>, expectedValue: T, ...: any)
+local function testSelector<Input, Output>(selector: Selector<Input, Output>, expectedValue: Output, ...: any): boolean
 	if selector(...) == expectedValue then
 		return true
 	end
@@ -68,8 +53,20 @@ local function testSelector<T>(selector: Selector<T>, expectedValue: T, ...: any
 	return false
 end
 
-local function watch<C>(document: Document<C>, ...: any): Connection
-	local selector, predicate, listener = getWatchFuncArguments(...)
+local function watch<Contents, Selection>(document: Document<Contents>, ...: any): Connection
+	local arguments = select("#", ...)
+
+	local selector: Selector<Contents, Selection>
+	local predicate: Predicate<Contents | Selection, Contents | Selection>
+	local listener: Listener<Contents | Selection>
+
+	if arguments >= 3 then
+		selector, predicate, listener = ...
+	elseif arguments == 2 then
+		selector, listener = ...
+	else
+		listener = ...
+	end
 
 	local selection = document:read(selector)
 
@@ -77,13 +74,17 @@ local function watch<C>(document: Document<C>, ...: any): Connection
 		testSelector(selector, selection, document:read())
 	end
 
-	listener(selection, nil :: never)
+	listener(selection, selection)
 
 	return document:changed(function(newContents, oldContents)
 		local newSelection = if selector then selector(newContents) else newContents
 		local oldSelection = if selector then selector(oldContents) else oldContents
 
-		if predicate and not predicate(newSelection, oldSelection) then
+		if newSelection == oldSelection then
+			return
+		end
+
+		if predicate and predicate(newSelection, oldSelection) == false then
 			return
 		end
 
@@ -91,8 +92,12 @@ local function watch<C>(document: Document<C>, ...: any): Connection
 	end)
 end
 
-local function watchFor<C>(document: Document<C>, keyword: PrimitiveSelector<C>, listener: Listener<C>): Connection
-	if not isPrimitive(document:read(keyword :: any)) then
+local function watchFor<Contents, KeyWord>(
+	document: Document<Contents>,
+	keyword: PrimitiveSelector<Contents, KeyWord>,
+	listener: Listener<KeyWord>
+): Connection
+	if not isPrimitive(document:read(keyword)) then
 		error(PRIMITIVE_WARNING, 2)
 	end
 
