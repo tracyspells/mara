@@ -19,7 +19,7 @@ local ERROR_MESSAGES = {
 	DifferentTypes = [[
 		The result from the 'makeChanges' callback must have the same type as what was set for 'initialContents'!
 		(got %s when it's supposed to be %s)
-	]]
+	]],
 }
 
 type Document<Contents> = types.Document<Contents>
@@ -31,7 +31,7 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 	local contents = initialContents
 	local contentsType = typeof(initialContents)
 	local isTable = contentsType == "table"
-	
+
 	local watchdog = Watchdog.new()
 
 	local function processContents(newContents: Contents, oldContents: Contents)
@@ -167,7 +167,7 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 			end
 		end
 
-		processContents(newContents,  oldContents)
+		processContents(newContents, oldContents)
 	end
 
 	function document:edit(makeChanges)

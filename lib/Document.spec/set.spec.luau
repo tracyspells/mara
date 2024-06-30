@@ -32,7 +32,7 @@ return function()
 		end).to.throw()
 	end)
 
-	it("shouldn't set contents to a type different than what was initially set", function() 
+	it("shouldn't set contents to a type different than what was initially set", function()
 		expect(function()
 			document:setContents("hi my name is alice")
 		end).to.throw()

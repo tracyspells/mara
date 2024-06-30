@@ -49,7 +49,7 @@ return function()
 
 			function(number)
 				return number * 2
-			end
+			end,
 		})
 
 		local result = document:read()

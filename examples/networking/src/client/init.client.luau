@@ -40,9 +40,9 @@ documents.counter:changed(function(count)
 	local isBuzz = buzzPredicate(count) == true
 
 	if isFizz then
-		print('fizz')
+		print("fizz")
 	elseif isBuzz then
-		print('buzz')
+		print("buzz")
 	end
 end)
 

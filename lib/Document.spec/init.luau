@@ -27,7 +27,7 @@ return function()
 		expect(document.changed).to.be.a("function")
 	end)
 
-	describe("basic functions", function()  
+	describe("basic functions", function()
 		local documentA: Document<Contents>
 		local documentB: Document<number>
 
@@ -36,24 +36,24 @@ return function()
 			documentB = createDocument(0)
 		end)
 
-		afterEach(function() 
+		afterEach(function()
 			documentA:shred()
-			documentB:shred() 
+			documentB:shred()
 		end)
 
 		it("should read contents", function()
 			local resultA = documentA:read()
-	
+
 			expect(resultA).to.be.a("table")
 			expect(resultA.a).to.equal(0)
-	
+
 			local resultB = documentA:read(selector)
-	
+
 			expect(resultB).to.be.a("number")
 			expect(resultB).to.equal(0)
 
 			local resultC = documentB:read()
-			
+
 			expect(resultC).to.be.a("number")
 			expect(resultC).to.equal(0)
 		end)
@@ -62,17 +62,17 @@ return function()
 			documentA:edit(function(contents)
 				contents.a += 1
 			end)
-	
+
 			local resultA = documentA:read()
-	
+
 			expect(resultA.a).to.equal(1)
-	
+
 			documentA:edit(function(contents)
 				contents.a -= 1
 			end)
-	
+
 			resultA = documentA:read()
-	
+
 			expect(resultA.a).to.equal(0)
 
 			documentB:edit(function(number)

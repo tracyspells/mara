@@ -55,7 +55,7 @@ local function testSelector<Input, Output>(selector: Selector<Input, Output>, ex
 	return false
 end
 
-local function watchRaw<Contents>(document: Document<Contents>, ...:any): Connection
+local function watchRaw<Contents>(document: Document<Contents>, ...: any): Connection
 	local arguments = select("#", ...)
 
 	local predicate: Predicate<Contents, Contents>
