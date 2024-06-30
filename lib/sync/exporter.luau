@@ -101,7 +101,7 @@ local function getExporter(options: ExporterOptions): Exporter
 			changed = false
 
 			for player in playersConnected do
-				onExport(player, { type = "diff", contents = diff })
+				task.spawn(onExport, player, { type = "diff", contents = diff } :: NetworkPayload)
 			end
 		end, options.interval)
 	end
