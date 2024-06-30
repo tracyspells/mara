@@ -6,15 +6,16 @@ local isStrictTable = require(script.Parent.utils.isStrictTable)
 local IS_STUDIO = RunService:IsStudio()
 
 local PRIMITIVES = { "string", "boolean", "number" }
-local PRIMITIVE_WARNING = [[
+local WARNINGS = {
+	Primitive = [[
 	Mara has detected that the selector passed in `watchFor`
 	returns either a table or `None`.
 
 	Please ensure the selector returns a primitive value
 	(e.g. strings, booleans, numbers)
-]]
+]],
 
-local TEST_WARNING = [[
+	TestingSelector = [[
 	Mara detected a selector function that returns conflicting values for the same input!
 	This is likely caused by one of the following:
 
@@ -22,7 +23,8 @@ local TEST_WARNING = [[
 	- The selector function is memoized but is not idempotent
 
 	%s
-]]
+]],
+}
 
 type Document<Contents> = types.Document<Contents>
 type Connection = types.Connection
@@ -47,13 +49,46 @@ local function testSelector<Input, Output>(selector: Selector<Input, Output>, ex
 
 	if IS_STUDIO then
 		local traceback = debug.traceback("Function traceback", 2)
-		warn(string.format(TEST_WARNING, traceback))
+		warn(string.format(WARNINGS.TestingSelector, traceback))
 	end
 
 	return false
 end
 
+local function watchRaw<Contents>(document: Document<Contents>, ...:any): Connection
+	local arguments = select("#", ...)
+
+	local predicate: Predicate<Contents, Contents>
+	local listener: Listener<Contents>
+
+	if arguments >= 2 then
+		predicate, listener = ...
+	else
+		listener = ...
+	end
+
+	local contents = document:read()
+
+	listener(contents, contents)
+
+	return document:changed(function(newContents, oldContents)
+		if newContents == oldContents then
+			return
+		end
+
+		if predicate and predicate(newContents, oldContents) == false then
+			return
+		end
+
+		listener(newContents, oldContents)
+	end)
+end
+
 local function watch<Contents, Selection>(document: Document<Contents>, ...: any): Connection
+	if document.contentsType ~= "table" then
+		return watchRaw(document, ...)
+	end
+
 	local arguments = select("#", ...)
 
 	local selector: Selector<Contents, Selection>
@@ -97,8 +132,12 @@ local function watchFor<Contents, KeyWord>(
 	keyword: PrimitiveSelector<Contents, KeyWord>,
 	listener: Listener<KeyWord>
 ): Connection
+	if document.contentsType ~= "table" then
+		error("`Mara.watchFor()` is only for tables, please use `Mara.watch()` for non-table document contents!")
+	end
+
 	if not isPrimitive(document:read(keyword)) then
-		error(PRIMITIVE_WARNING, 2)
+		error(WARNINGS.Primitive)
 	end
 
 	return watch(document, keyword, listener)

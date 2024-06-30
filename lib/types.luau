@@ -7,7 +7,8 @@ export type Connection = {
 export type Dictionary<K, V> = { [K]: V }
 export type AnyDictionary = Dictionary<any, any>
 
-export type Document<Contents = AnyDictionary> = {
+export type Document<Contents = any> = {
+	contentsType: string,
 	shred: (self: Document<Contents>) -> (),
 	changed: (self: Document<Contents>, callback: Listener<Contents>) -> Connection,
 
@@ -22,7 +23,7 @@ export type Document<Contents = AnyDictionary> = {
 	redo: (self: Document<Contents>) -> (),
 }
 
-export type Editor<Contents> = (contents: Contents) -> ()
+export type Editor<Contents> = (contents: Contents) -> () | any
 
 export type DocumentMap = Dictionary<string, Document>
 
