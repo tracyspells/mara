@@ -15,7 +15,9 @@ local TIMELINE_WARNING = [[
 ]]
 
 local ERROR_MESSAGES = {
-	NonNil = "Document contents must be a non-nil value.",
+	NonNil = "The contents of a document must be a non-nil value.",
+	Instances = "The contents of a document cannot be an Instance.",
+	Metatables = "The contents of a document cannot be a metatable.",
 	DifferentTypes = [[
 		The result from the 'makeChanges' callback must have the same type as what was set for 'initialContents'!
 		(got %s when it's supposed to be %s)
@@ -25,22 +27,30 @@ local ERROR_MESSAGES = {
 type Document<Contents> = types.Document<Contents>
 type Connection = types.Connection
 
-local function createDocument<Contents>(initialContents): Document<Contents>
+local function createDocument<Contents>(initialContents: Contents): Document<Contents>
 	assert(initialContents ~= nil, ERROR_MESSAGES.NonNil)
+	assert(typeof(initialContents) ~= "Instance", ERROR_MESSAGES.Instances)
+
+	if typeof(initialContents) == "table" and getmetatable(initialContents) ~= nil then
+		error(ERROR_MESSAGES.Metatables)
+	end
 
 	local contents = initialContents
 	local contentsType = typeof(initialContents)
-	local isTable = contentsType == "table"
 
 	local watchdog = Watchdog.new()
 
 	local function processContents(newContents: Contents, oldContents: Contents)
 		if newContents ~= oldContents then
-			if not isTable then
+			if contentsType ~= "table" then
 				if newContents == nil then
 					error("The result from the 'makeChanges' callback cannot be nil!")
 				elseif typeof(newContents) ~= contentsType then
 					error(string.format(ERROR_MESSAGES.DifferentTypes, typeof(newContents), contentsType))
+				end
+			else
+				if getmetatable(newContents :: any) ~= nil then
+					error("The result from the 'makeChanges' callback cannot be a metatable!")
 				end
 			end
 
@@ -59,7 +69,7 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 	end
 
 	function document:read(selector)
-		if isTable then
+		if contentsType == "table" then
 			return if selector then selector(contents) else contents
 		else
 			return contents
@@ -73,6 +83,10 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 
 		if typeof(newContents) ~= contentsType then
 			error(string.format(ERROR_MESSAGES.DifferentTypes, typeof(newContents), contentsType))
+		end
+
+		if typeof(newContents) == "table" and getmetatable(newContents :: any) ~= nil then
+			error(ERROR_MESSAGES.Metatables)
 		end
 
 		local oldContents = contents
@@ -155,14 +169,34 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 				continue
 			end
 
-			if isTable then
+			if contentsType == "table" then
 				if not newContents then
 					newContents = copy(contents :: any)
 				end
 
 				makeChanges(newContents)
 			else
-				newContents = if not newContents then makeChanges(oldContents) else makeChanges(newContents)
+				if not newContents then
+					local areContentsInvalid = false
+
+					newContents = makeChanges(oldContents)
+
+					if
+						newContents == nil
+						or typeof(newContents) == "Instance"
+						or typeof(newContents) == "table" and getmetatable(newContents) ~= nil
+					then
+						areContentsInvalid = true
+					end
+
+					if areContentsInvalid then
+						newContents = oldContents
+
+						break
+					end
+				else
+					newContents = makeChanges(newContents)
+				end
 			end
 		end
 
@@ -173,7 +207,7 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 		local oldContents = contents
 		local newContents: any
 
-		if isTable then
+		if contentsType == "table" then
 			newContents = copy(contents :: any)
 			makeChanges(newContents)
 		else
