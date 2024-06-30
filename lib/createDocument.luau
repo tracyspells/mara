@@ -27,7 +27,7 @@ local ERROR_MESSAGES = {
 type Document<Contents> = types.Document<Contents>
 type Connection = types.Connection
 
-local function createDocument<Contents>(initialContents): Document<Contents>
+local function createDocument<Contents>(initialContents: Contents): Document<Contents>
 	assert(initialContents ~= nil, ERROR_MESSAGES.NonNil)
 	assert(typeof(initialContents) ~= "Instance", ERROR_MESSAGES.Instances)
 
@@ -35,7 +35,7 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 		error(ERROR_MESSAGES.Metatables)
 	end
 
-	local contents = initialContents :: any
+	local contents = initialContents
 	local contentsType = typeof(initialContents)
 
 	local watchdog = Watchdog.new()
@@ -181,11 +181,11 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 
 					newContents = makeChanges(oldContents)
 
-					if newContents == nil then
-						areContentsInvalid = true
-					elseif typeof(newContents) == "Instance" then
-						areContentsInvalid = true
-					elseif typeof(newContents) == "table" and getmetatable(newContents) ~= nil then
+					if
+						newContents == nil
+						or typeof(newContents) == "Instance"
+						or typeof(newContents) == "table" and getmetatable(newContents) ~= nil
+					then
 						areContentsInvalid = true
 					end
 
