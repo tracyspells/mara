@@ -176,7 +176,27 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 
 				makeChanges(newContents)
 			else
-				newContents = if not newContents then makeChanges(oldContents) else makeChanges(newContents)
+				if not newContents then
+					local areContentsInvalid = false
+
+					newContents = makeChanges(oldContents)
+
+					if newContents == nil then
+						areContentsInvalid = true
+					elseif typeof(newContents) == "Instance" then
+						areContentsInvalid = true
+					elseif typeof(newContents) == "table" and getmetatable(newContents) ~= nil then
+						areContentsInvalid = true
+					end
+
+					if areContentsInvalid then
+						newContents = oldContents
+
+						break
+					end
+				else
+					newContents = makeChanges(newContents)
+				end
 			end
 		end
 
