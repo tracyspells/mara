@@ -10,24 +10,46 @@ local IS_STUDIO = RunService:IsStudio()
 local IS_TESTING = IS_STUDIO and RunService:IsRunning()
 
 local TIMELINE_WARNING = [[
-	The method `%s` cannot be used without calling `trackDocumentHistory` first!
+	Document`%s` cannot be used without calling `Mara.trackDocumentHistory()` first!
 	%s
 ]]
+
+local ERROR_MESSAGES = {
+	NonNil = "Document contents must be a non-nil value.",
+	DifferentTypes = [[
+		The result from the 'makeChanges' callback must have the same type as what was set for 'initialContents'!
+		(got %s when it's supposed to be %s)
+	]],
+}
 
 type Document<Contents> = types.Document<Contents>
 type Connection = types.Connection
 
 local function createDocument<Contents>(initialContents): Document<Contents>
-	assert(
-		isStrictTable(initialContents),
-		`Documents must be based on tables with no existing metatables. Got {typeof(initialContents)}`
-	)
+	assert(initialContents ~= nil, ERROR_MESSAGES.NonNil)
 
-	local document = {}
 	local contents = initialContents
+	local contentsType = typeof(initialContents)
+	local isTable = contentsType == "table"
 
 	local watchdog = Watchdog.new()
 
+	local function processContents(newContents: Contents, oldContents: Contents)
+		if newContents ~= oldContents then
+			if not isTable then
+				if newContents == nil then
+					error("The result from the 'makeChanges' callback cannot be nil!")
+				elseif typeof(newContents) ~= contentsType then
+					error(string.format(ERROR_MESSAGES.DifferentTypes, typeof(newContents), contentsType))
+				end
+			end
+
+			contents = newContents
+			watchdog:bark(contents, oldContents)
+		end
+	end
+
+	local document = { contentsType = contentsType }
 	function document:shred()
 		watchdog:sleep()
 
@@ -37,16 +59,20 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 	end
 
 	function document:read(selector)
-		return if selector then selector(contents) else contents
+		if isTable then
+			return if selector then selector(contents) else contents
+		else
+			return contents
+		end
 	end
 
 	function document:setContents(newContents)
-		if not newContents then
-			return
+		if newContents == nil then
+			error(ERROR_MESSAGES.NonNil)
 		end
 
-		if not isStrictTable(newContents) then
-			error(`Documents must be based on tables with no existing metatables. Got {typeof(initialContents)}`)
+		if typeof(newContents) ~= contentsType then
+			error(string.format(ERROR_MESSAGES.DifferentTypes, typeof(newContents), contentsType))
 		end
 
 		local oldContents = contents
@@ -120,7 +146,7 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 		end
 
 		local oldContents = contents
-		local newContents = copy(contents)
+		local newContents: any
 
 		for index = 1, #edits do
 			local makeChanges = edits[index]
@@ -129,25 +155,32 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 				continue
 			end
 
-			makeChanges(newContents)
+			if isTable then
+				if not newContents then
+					newContents = copy(contents :: any)
+				end
+
+				makeChanges(newContents)
+			else
+				newContents = if not newContents then makeChanges(oldContents) else makeChanges(newContents)
+			end
 		end
 
-		if newContents ~= oldContents then
-			contents = newContents
-			watchdog:bark(contents, oldContents)
-		end
+		processContents(newContents, oldContents)
 	end
 
 	function document:edit(makeChanges)
 		local oldContents = contents
-		local newContents = copy(contents)
+		local newContents: any
 
-		makeChanges(newContents)
-
-		if newContents ~= oldContents then
-			contents = newContents
-			watchdog:bark(contents, oldContents)
+		if isTable then
+			newContents = copy(contents :: any)
+			makeChanges(newContents)
+		else
+			newContents = makeChanges(oldContents)
 		end
+
+		processContents(newContents, oldContents)
 	end
 
 	return document :: any
