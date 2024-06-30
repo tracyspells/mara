@@ -145,7 +145,6 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 			return
 		end
 
-		local isTable = contentsType == "table"
 		local oldContents = contents
 		local newContents: any
 
@@ -171,7 +170,6 @@ local function createDocument<Contents>(initialContents): Document<Contents>
 	end
 
 	function document:edit(makeChanges)
-		local isTable = contentsType == "table"
 		local oldContents = contents
 		local newContents: any
 
