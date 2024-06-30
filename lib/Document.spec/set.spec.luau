@@ -26,9 +26,15 @@ return function()
 		expect(newContents.b).to.equal(0)
 	end)
 
-	it("shouldn't set contents to non-table values", function()
+	it("shouldn't set contents to nil", function()
 		expect(function()
-			document:setContents(0)
+			document:setContents(nil)
+		end).to.throw()
+	end)
+
+	it("shouldn't set contents to a type different than what was initially set", function() 
+		expect(function()
+			document:setContents("hi my name is alice")
 		end).to.throw()
 	end)
 end
