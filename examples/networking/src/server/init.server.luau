@@ -24,10 +24,8 @@ addRecipient:connect(function(player)
     exporter:addRecipient(player)
 end)
 
-while true do
-    documents.counter:edit(function(contents)
-        contents.count += 1
+while task.wait(3) do
+    documents.counter:edit(function(count)
+       return count + 1
     end)
-
-    task.wait(3)
 end
