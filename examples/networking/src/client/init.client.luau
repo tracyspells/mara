@@ -11,6 +11,7 @@ local exportContents = network.exportContents
 local addRecipient = network.addRecipient
 
 local importer = Mara.getImporter(documents)
+local counter = documents.counter
 
 local function fizzPredicate(count: number): boolean
 	if count == 0 then
@@ -35,7 +36,7 @@ exportContents:connect(function(payload)
 	importer:import(payload)
 end)
 
-documents.counter:changed(function(count)
+counter:changed(function(count)
 	local isFizz = fizzPredicate(count) == true
 	local isBuzz = buzzPredicate(count) == true
 
@@ -46,6 +47,6 @@ documents.counter:changed(function(count)
 	end
 end)
 
-watch(documents.counter, function(count: number)
+watch(counter, function(count: number)
 	print(`count: {count}`)
 end)
