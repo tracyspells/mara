@@ -5,7 +5,7 @@ local copy = table.clone
 
 type AnyDictionary = types.AnyDictionary
 
-local function difference<O, N>(old: O & AnyDictionary, new: O & AnyDictionary): AnyDictionary?
+local function difference<Old, New>(old: Old & AnyDictionary, new: New & AnyDictionary): AnyDictionary
 	if not old then
 		return copy(new)
 	end

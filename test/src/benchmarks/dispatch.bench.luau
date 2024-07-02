@@ -22,11 +22,11 @@ local LOOPS = 500
 
 	Times
 
-	Mara.Document: 138 microseconds
-	Reflex.Producer: 206 microseconds
-	Rodux.Store: 566 microseconds
-	Sleitnick.Silo: 1380 microseconds
-	
+	Mara.Document: 197 microseconds
+	Reflex.Producer: 203 microseconds
+	Rodux.Store: 574 microseconds
+	Sleitnick.Silo: 1561 microseconds
+
 ]]
 
 return {

@@ -1,0 +1,1 @@
+rojo build default.project.json --output build.rbxl

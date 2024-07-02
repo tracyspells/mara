@@ -22,17 +22,17 @@ local LOOPS = 100
 
 	Times
 
-	Mara.stapleDocuments: 31 microseconds
-	Mara.createDocument: 44 microseconds
+	Mara.stapleDocuments: 40 microseconds
+	Mara.createDocument: 50 microseconds
 
-	Reflex.createProducer:   62 microseconds
+	Reflex.createProducer:   66 microseconds
 	Reflex.combineProducers: 81 microseconds
 
-	Rodux.createReducer:     137 microseconds
-	Rodux.combineReducers:   187 microseconds
+	Rodux.createReducer:     147 microseconds
+	Rodux.combineReducers:   186 microseconds
 
-	Sleitnick.singleSilo:    480 microseconds
-	Sleitnick.combineSilos:  511 microseconds
+	Sleitnick.singleSilo:    455 microseconds
+	Sleitnick.combineSilos:  484 microseconds
 	
 ]]
 
