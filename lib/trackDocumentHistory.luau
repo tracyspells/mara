@@ -84,9 +84,9 @@ local function createVault<T>(size: number): VaultObject<T>
 	return vault :: any
 end
 
-local function trackDocumentHistory<C>(document: Document<C>): Document<C>
+local function trackDocumentHistory<Contents>(document: Document<Contents>): Document<Contents>
 	local version = 0
-	local vault = createVault(60) :: VaultObject<C>
+	local vault = createVault(60) :: VaultObject<Contents>
 
 	local isUndoing = false
 	local isRedoing = false
