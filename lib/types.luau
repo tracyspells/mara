@@ -12,13 +12,20 @@ export type Document<Contents = any> = {
 	shred: (self: Document<Contents>) -> (),
 	changed: (self: Document<Contents>, callback: Listener<Contents>) -> Connection,
 
+	get: (self: Document<Contents>) -> Contents,
 	read: ((self: Document<Contents>) -> Contents)
 		& (<Selection>(self: Document<Contents>, selector: Selector<Contents, Selection>) -> Selection),
 
-	edit: (self: Document<Contents>, makeChanges: Editor<Contents>) -> (),
+	edit: (self: Document<Contents>, makeChanges: Editor<Contents>, path: { string | number }?) -> (),
+	update: (self: Document<Contents>, onUpdate: Editor<Contents>) -> (),
 	batchEdits: (self: Document<Contents>, edits: { Editor<Contents> }) -> (),
+
 	setContents: (self: Document<Contents>, newContents: any) -> (),
+	set: (self: Document<Contents>, newContents: any) -> (),
+
 	resetContents: (self: Document<Contents>) -> (),
+	reset: (self: Document<Contents>) -> (),
+
 	undo: (self: Document<Contents>) -> (),
 	redo: (self: Document<Contents>) -> (),
 }

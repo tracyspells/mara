@@ -2,17 +2,22 @@ local RunService = game:GetService("RunService")
 
 local Watchdog = require(script.Parent.Watchdog)
 local types = require(script.Parent.types)
-local isStrictTable = require(script.Parent.utils.isStrictTable)
+
+local utils = script.Parent.utils
+local isStrictTable = require(utils.isStrictTable)
+local shallowCopyPath = require(utils.shallowCopyPath)
+local generateStringFromPath = require(utils.generateStringFromPath)
 
 local copy = table.clone
 
-local IS_STUDIO = RunService:IsStudio()
-local IS_TESTING = IS_STUDIO and RunService:IsRunning()
+local IS_TESTING = RunService:IsStudio() and RunService:IsRunning()
 
-local TIMELINE_WARNING = [[
-	Document`%s` cannot be used without calling `Mara.trackDocumentHistory()` first!
-	%s
-]]
+local WARNINGS = {
+	Timeline = [[
+		`Document%s` cannot be used without calling `Mara.trackDocumentHistory()` first!
+		%s
+	]],
+}
 
 local ERROR_MESSAGES = {
 	NonNil = "The contents of a document must be a non-nil value.",
@@ -25,14 +30,30 @@ local ERROR_MESSAGES = {
 }
 
 type Document<Contents> = types.Document<Contents>
+type Editor<Contents> = types.Editor<Contents>
 type Connection = types.Connection
 
-local function createDocument<Contents>(initialContents: Contents): Document<Contents>
-	assert(initialContents ~= nil, ERROR_MESSAGES.NonNil)
-	assert(typeof(initialContents) ~= "Instance", ERROR_MESSAGES.Instances)
+local function areContentsInvalid<Contents>(contents: Contents): (boolean, string?)
+	if contents == nil then
+		return true, ERROR_MESSAGES.NonNil
+	end
 
-	if typeof(initialContents) == "table" and getmetatable(initialContents) ~= nil then
-		error(ERROR_MESSAGES.Metatables)
+	if typeof(contents) == "Instance" then
+		return true, ERROR_MESSAGES.Instances
+	end
+
+	if typeof(contents) == "table" and getmetatable(contents) ~= nil then
+		return true, ERROR_MESSAGES.Metatables
+	end
+
+	return false
+end
+
+local function createDocument<Contents>(initialContents: Contents): Document<Contents>
+	local isInvalid, message = areContentsInvalid(initialContents)
+
+	if isInvalid then
+		error(message)
 	end
 
 	local contents = initialContents
@@ -61,11 +82,11 @@ local function createDocument<Contents>(initialContents: Contents): Document<Con
 
 	local document = { contentsType = contentsType }
 	function document:shred()
-		watchdog:sleep()
-
 		if self["_timeline"] then
 			self._timeline:wipe()
 		end
+
+		watchdog:sleep()
 	end
 
 	function document:read(selector)
@@ -77,16 +98,14 @@ local function createDocument<Contents>(initialContents: Contents): Document<Con
 	end
 
 	function document:setContents(newContents)
-		if newContents == nil then
-			error(ERROR_MESSAGES.NonNil)
+		local success, result = areContentsInvalid(newContents)
+
+		if success then
+			error(result)
 		end
 
 		if typeof(newContents) ~= contentsType then
 			error(string.format(ERROR_MESSAGES.DifferentTypes, typeof(newContents), contentsType))
-		end
-
-		if typeof(newContents) == "table" and getmetatable(newContents :: any) ~= nil then
-			error(ERROR_MESSAGES.Metatables)
 		end
 
 		local oldContents = contents
@@ -104,7 +123,7 @@ local function createDocument<Contents>(initialContents: Contents): Document<Con
 			if IS_TESTING then
 				local traceback = debug.traceback("Function traceback", 2)
 
-				warn(string.format(TIMELINE_WARNING, ":undo()", traceback))
+				warn(string.format(WARNINGS.Timeline, ":undo()", traceback))
 			end
 
 			return
@@ -118,7 +137,7 @@ local function createDocument<Contents>(initialContents: Contents): Document<Con
 			if IS_TESTING then
 				local traceback = debug.traceback("Function traceback", 2)
 
-				warn(string.format(TIMELINE_WARNING, ":redo()", traceback))
+				warn(string.format(WARNINGS.Timeline, ":redo()", traceback))
 			end
 
 			return
@@ -177,19 +196,9 @@ local function createDocument<Contents>(initialContents: Contents): Document<Con
 				makeChanges(newContents)
 			else
 				if not newContents then
-					local areContentsInvalid = false
-
 					newContents = makeChanges(oldContents)
 
-					if
-						newContents == nil
-						or typeof(newContents) == "Instance"
-						or typeof(newContents) == "table" and getmetatable(newContents) ~= nil
-					then
-						areContentsInvalid = true
-					end
-
-					if areContentsInvalid then
+					if areContentsInvalid(newContents) then
 						newContents = oldContents
 
 						break
@@ -203,19 +212,48 @@ local function createDocument<Contents>(initialContents: Contents): Document<Con
 		processContents(newContents, oldContents)
 	end
 
-	function document:edit(makeChanges)
-		local oldContents = contents
+	function document:edit(...)
+		local arguments = select("#", ...)
+		local path: { string | number }
+		local makeChanges: (Contents) -> any
+
+		if arguments >= 2 then
+			makeChanges, path = ...
+		else
+			makeChanges = ...
+		end
+
+		local oldContents = contents :: any
 		local newContents: any
 
 		if contentsType == "table" then
-			newContents = copy(contents :: any)
-			makeChanges(newContents)
+			if path then
+				local result, tableToEdit = shallowCopyPath(contents :: any, path)
+
+				if tableToEdit == nil then
+					local lastEntry = #path
+					local dictionaryPath = generateStringFromPath(path)
+
+					error(`The data you are trying to edit {path[lastEntry]} in {dictionaryPath} doesn't exist!`)
+				end
+
+				newContents = result
+				makeChanges(tableToEdit :: any)
+			else
+				newContents = copy(contents :: any)
+				makeChanges(newContents)
+			end
 		else
 			newContents = makeChanges(oldContents)
 		end
 
 		processContents(newContents, oldContents)
 	end
+
+	document.get = document.read
+	document.set = document.setContents
+	document.reset = document.resetContents
+	document.update = document.edit
 
 	return document :: any
 end
