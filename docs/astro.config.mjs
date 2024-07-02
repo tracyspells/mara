@@ -31,8 +31,9 @@ export default defineConfig({
 					label: 'Guides',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: "Your First Document", link: "/guides/your-first-document/" },
-						{ label: "Organizing Documents", link: "/guides/organizing-documents/" },
+						{ label: "How to create your first document", link: "/guides/your-first-document/" },
+						{ label: "How to organize your documents", link: "/guides/organizing-documents/" },
+						{ label: "How to subscribe to document changes", link: "/guides/document-changes/" },
 					],
 				},
 				{
