@@ -1,0 +1,49 @@
+---
+title: Installation
+description: A quick guide on how to install Mara.
+---
+
+import { Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+Select the installation method you would like to use below.
+
+<Tabs>
+<TabItem label = "Wally">
+
+This mini tutorial assumes you've already installed [Wally](https://wally.run/) through [Aftman](https://github.com/LPGhatguy/aftman).
+
+<Steps>
+
+1. Inside your `wally.toml` on your project directory, add the following dependency:
+
+    ```toml title = "wally.toml"
+    [dependencies]
+    Mara = "tracyspells/mara@2.2.0"
+    ```
+
+2. In your terminal, run the following code:
+
+    ```bash
+    wally install
+    ```
+</Steps>
+
+<Aside>
+If you cannot see your `wally.toml` in your project directory, run the following code inside your terminal:
+
+ ```bash
+wally install
+ ```
+
+</Aside>
+
+</TabItem>
+
+<TabItem label = "Roblox">
+
+Check out the latest [GitHub Release](https://github.com/tracyspells/mara/releases) to download the `.rbxm` file.
+
+After downloading the file, drag it into Roblox Studio.
+
+</TabItem>
+</Tabs>
