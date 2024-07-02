@@ -8,6 +8,8 @@ local documents = require(ReplicatedStorage.Shared.documents)
 local exportContents = network.exportContents
 local addRecipient = network.addRecipient
 
+local counter = documents.counter
+
 local function onExport(player, payload)
 	exportContents:fire(player, payload)
 end
@@ -25,7 +27,5 @@ addRecipient:connect(function(player)
 end)
 
 while task.wait(3) do
-	documents.counter:edit(function(count)
-		return count + 1
-	end)
+	counter:set(counter:get() + 1)
 end
