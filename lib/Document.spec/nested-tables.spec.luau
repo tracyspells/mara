@@ -52,17 +52,17 @@ return function()
 		local result = document:read()
 		expect(result.c.f.h).to.equal(3)
 
-        document:edit(function(contents: ContentsB)
+		document:edit(function(contents: ContentsB)
 			contents.d += 1
 		end, { "c", "d" })
 
-        result = document:read()
-        expect(result.c.d).to.equal(2)
+		result = document:read()
+		expect(result.c.d).to.equal(2)
 	end)
 
-	it("shouldn't edit entries that don't exist", function() 
+	it("shouldn't edit entries that don't exist", function()
 		expect(function()
-			 document:edit(function(contents)
+			document:edit(function(contents)
 				contents.a = false :: any
 			end, { "c", "g" })
 		end).to.throw()
