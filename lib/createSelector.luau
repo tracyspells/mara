@@ -8,8 +8,10 @@ type EqualityOptions = {
 	resultEqualityCheck: CompareFunction?,
 }
 
+type AnySelector = Selector<any, any>
+
 -- https://github.com/littensy/reflex/blob/master/src/createSelector.lua
-local function memoize<Args...>(fn: (Args...) -> any?, equalityFunc: CompareFunction?, resultEqualityFunc: CompareFunction?)
+local function memoize<Args...>(fn: (Args...) -> any, equalityFunc: CompareFunction?, resultEqualityFunc: CompareFunction?)
 	local lastArguments = {}
 	local lastArgumentCount = -1
 	local lastResult = nil
@@ -53,8 +55,8 @@ local function memoize<Args...>(fn: (Args...) -> any?, equalityFunc: CompareFunc
 end
 
 local function createSelector(
-	inputSelectors: { Selector<any, any> },
-	combiner: (...any) -> any?,
+	inputSelectors: { AnySelector },
+	combiner: (...any) -> any,
 	optionsOrEqualityCheck: EqualityOptions | CompareFunction
 ): (...any) -> any
 	local options: EqualityOptions
