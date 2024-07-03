@@ -7,7 +7,8 @@ _Mara_ is a lightweight state container that allows you to write simple code to 
 It is inspired by [Reflex](https://littensy.github.io/reflex/), [Valtio](https://valtio.pmnd.rs/) and [Fusion](https://elttob.uk/Fusion/0.2/).
 
 ## Why Mara?
-Dealing with state should be simple and straightforward. 
+
+Dealing with state should be simple and straightforward.
 
 Working with state management libraries like [Rodux](https://roblox.github.io/rodux/), Reflex, and [Silo](https://sleitnick.github.io/RbxUtil/api/Silo/) was awesome! But having to make a new action, a reducer, or a middleware felt too tedious and time consuming.
 

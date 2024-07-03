@@ -6,12 +6,10 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'mara',
-			customCss: [
-				'./src/styles/themes.css',
-			],
 
 			social: {
 				github: 'https://github.com/tracyspells/mara',
+				discord: 'https://discord.gg/ApYYS9mEhT',
 			},
 
 			defaultLocale: 'en',
@@ -21,21 +19,23 @@ export default defineConfig({
 
 			sidebar: [
 				{
-					label: "Getting Started",
+					label: 'Getting Started',
 					items: [
-						{ label: "Introduction", link: "/getting-started/introduction" },
-						{ label: "Installation", link: "/getting-started/installation" },
+						{ label: 'Introduction', link: '/getting-started/introduction/' },
+						{ label: 'Installation', link: '/getting-started/installation/' },
 					],
 				},
+
 				{
 					label: 'Guides',
 					items: [
-						// Each item here is one entry in the navigation menu.
 						{ label: "How to create your first document", link: "/guides/your-first-document/" },
 						{ label: "How to organize your documents", link: "/guides/organizing-documents/" },
+						{ label: "How to use selectors", link: "/guides/your-first-selector/" },
 						{ label: "How to subscribe to document changes", link: "/guides/document-changes/" },
 					],
 				},
+
 				{
 					label: 'Reference',
 					autogenerate: { directory: 'reference' },

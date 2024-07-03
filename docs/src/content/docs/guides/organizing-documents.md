@@ -4,6 +4,7 @@ description: A guide to how to organize documents in Mara.
 ---
 
 ## One Source of Truth
+
 You can have one document be the source of truth:
 
 ```lua title = "document.luau" showLineNumbers
@@ -34,6 +35,7 @@ return document
 ```
 
 ## Combining Documents
+
 ..or you can create documents and combine them.
 
 ```lua title = "gameState.luau" showLineNumbers
