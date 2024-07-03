@@ -9,7 +9,7 @@ To keep track of changes to a document's contents, we can use `:changed()`:
 local timer = require(ReplicatedStorage.Documents.Timer)
 
 timer:changed(function(timeLeft: number)
-    print("Time left: "..timeLeft.. "seconds")
+    print("Time left: ", timeLeft, " seconds")
 end)
 
 -- Let's update our timer!
@@ -24,7 +24,7 @@ end)
 local connection: Connection
 connection = timer:changed(function(timeLeft: number)
     -- The print statement below will not run.
-    print("Time left: "..timeLeft.. "seconds")
+    print("Time left: ", timeLeft, " seconds")
 end)
 
 connection:Disconnect()
