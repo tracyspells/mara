@@ -3,6 +3,9 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://tracyspells.github.io',
+	base: 'mara',
+
 	integrations: [
 		starlight({
 			title: 'mara',
