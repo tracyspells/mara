@@ -1,0 +1,115 @@
+---
+title: How to create your first document
+description: A guide to how to make a document in Mara.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+## What are Documents?
+
+Documents are the heart and soul of Mara. They are containers that hold "contents" (state, if you will), and you can watch their contents and modify them at any point in time.
+
+## Creating a document
+
+Creating documents is simple and straightforward. Here are some examples of what a [document](/mara/reference/create-document/document) might look like:
+
+<Tabs>
+
+<TabItem label = "Counter" icon = "up-caret">
+
+    ```lua title="counter.luau" showLineNumbers
+    local Mara = require(ReplicatedStorage.Packages.Mara)
+
+    local createDocument = Mara.createDocument
+
+    type Document<Contents> = Mara.Document<Contents>
+
+    type Contents = number
+
+    local counter = createDocument(0) :: Document<Contents>
+
+    return counter
+    ```
+
+</TabItem>
+
+<TabItem label = "Todos" icon = "approve-check">
+
+    ```lua title="todos.luau" showLineNumbers
+    local Mara = require(ReplicatedStorage.Packages.Mara)
+
+    local createDocument = Mara.createDocument
+
+    type Document<Contents> = Mara.Document<Contents>
+
+    type Contents = {
+        todos: { string },
+    }
+
+    local todos = createDocument({
+        todos = {}
+    }) :: Document<Contents>
+
+    return todos
+    ```
+
+</TabItem>
+
+<TabItem label = "Player Data" icon = "open-book">
+
+    ```lua title="playerData.luau" showLineNumbers
+    local Mara = require(ReplicatedStorage.Packages.Mara)
+
+    local createDocument = Mara.createDocument
+
+    type Document<Contents> = Mara.Document<Contents>
+
+    type Contents = {
+        coins: number,
+        exp: number,
+        health: number,
+        weapons: { string },
+    }
+
+    local playerData = createDocument({
+        coins = 0,
+        exp = 0,
+        health = 0,
+        weapons = { "Basic Sword" }
+     }) :: Document<Contents>
+
+    return playerData
+    ```
+
+</TabItem>
+</Tabs>
+
+As stated earlier, documents contain contents. Document contents aren't limited to regular arrays and dictionaries; they can be whatever you want [(with some exceptions)](/mara/reference/create-document/#returns).
+
+Mara treats document contents as [immutable](https://en.wikipedia.org/wiki/Immutable_object) — meaning, you can't modify them directly. Instead, you provide new contents that overwrite the existing ones.
+
+## Using your document
+
+Now that we've created our document, we can tune in whenever the document's contents changes. For example, let's take our `Counter` document and increase our counter:
+
+```lua showLineNumbers
+local counter = require(script.Parent.counter)
+
+counter:changed(function(count: number)
+    print("Count: "..count)
+end)
+
+counter:edit(function(count: number)
+    return count + 1
+end)
+```
+
+```lua
+--> Count: 1
+```
+
+We use [`:edit()`](/mara/reference/create-document/document/#editmakechanges-path) to modify our counter, and [`:changed()`](/mara/reference/create-document/document/#changedcallback) to listen for changes to our counter.
+
+---
+
+In our next guide, we'll take a look on how to organize our documents.
