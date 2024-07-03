@@ -11,7 +11,7 @@ Documents are the heart and soul of Mara. They are containers that hold "content
 
 ## Creating a document
 
-Creating documents is simple and straightforward. Here are some examples of what a document might look like:
+Creating documents is simple and straightforward. Here are some examples of what a [document](/mara/reference/create-document/document) might look like:
 
 <Tabs>
 
@@ -84,7 +84,7 @@ Creating documents is simple and straightforward. Here are some examples of what
 </TabItem>
 </Tabs>
 
-As stated earlier, documents contain contents. Document contents aren't limited to regular arrays and dictionaries; they can be whatever you want (with some exceptions).
+As stated earlier, documents contain contents. Document contents aren't limited to regular arrays and dictionaries; they can be whatever you want [(with some exceptions)](/mara/reference/create-document/#returns).
 
 Mara treats document contents as [immutable](https://en.wikipedia.org/wiki/Immutable_object) — meaning, you can't modify them directly. Instead, you provide new contents that overwrite the existing ones.
 
@@ -108,7 +108,7 @@ end)
 --> Count: 1
 ```
 
-We use `:edit()` to modify our counter, and [`:changed()`](/guides/document-changes/) to listen for changes to our counter.
+We use [`:edit()`](/mara/reference/create-document/document/#editmakechanges-path) to modify our counter, and [`:changed()`](/mara/reference/create-document/document/#changedcallback) to listen for changes to our counter.
 
 ---
 

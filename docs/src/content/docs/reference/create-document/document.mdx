@@ -7,7 +7,7 @@ import { Aside } from "@astrojs/starlight/components";
 
 A document is a state container with built in functions to update its contents. 
 
-To create one, use [`Mara.createDocument()`](/reference/create-document).
+To create one, use [`Mara.createDocument()`](/mara/reference/create-document).
 
 ---
 
@@ -84,7 +84,7 @@ end)
 
     `:edit()` was designed to only shallow copy the root table, to prevent users from doing the above mentioned. 
     
-    Unfortunately, nested tables aren't copied (as we're not deep copying the document contents). There are ways to mitigate this [issue](/reference/create-document/#updating-nested-state), however.
+    Unfortunately, nested tables aren't copied (as we're not deep copying the document contents). There are ways to mitigate this [issue](/mara/reference/create-document/#updating-nested-state), however.
 
     </Aside>
 
@@ -270,7 +270,7 @@ timer:set( timer:get() - 1 )
     
     When working with non-table documents, **do not** set the following as `newContents`:
 
-    - a value whose type differs then the value you initially set in `Mara.createDocument()`
+    - a value whose type differs then the value you initially set in [`Mara.createDocument()`](/mara/reference/create-document/#parameters)
 
     </Aside>
 
@@ -337,7 +337,7 @@ counter:undo() --> 0
 
 <Aside type='caution'>
 
-You must call `Mara.trackDocumentHistory()` on your document before using this method!
+You must call [`Mara.trackDocumentHistory()`](/mara/reference/utility/document-history) on your document before using this method!
 
 </Aside>
 
@@ -365,7 +365,7 @@ counter:redo() --> 1
 
 <Aside type='caution'>
 
-You must call `Mara.trackDocumentHistory()` on your document before using this method!
+You must call [`Mara.trackDocumentHistory()`](/mara/reference/utility/document-history) on your document before using this method!
 
 </Aside>
 

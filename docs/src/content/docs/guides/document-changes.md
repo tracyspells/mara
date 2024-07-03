@@ -3,7 +3,7 @@ title: How to subscribe to document changes
 description: A guide on how to listen for changes to a document's contents in Mara.
 ---
 
-To keep track of changes to a document's contents, we can use `:changed()`:
+To keep track of changes to a document's contents, we can use [`:changed()`](/mara/reference/create-document/document/#changedcallback):
 
 ```lua showLineNumbers
 local timer = require(ReplicatedStorage.Documents.Timer)

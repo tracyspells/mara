@@ -14,7 +14,7 @@ Working with state management libraries like [Rodux](https://roblox.github.io/ro
 
 Instead of following the Redux model like its peers, Mara steps away from it, and approaches state management in a different way.
 
-In Mara, we create state containers called [documents](/guides/your-first-document/):
+In Mara, we create state containers called [documents](/mara/guides/your-first-document/):
 
 ```lua showLineNumbers
 local Mara = require(ReplicatedStorage.Packages.Mara)
