@@ -9,4 +9,19 @@ sourcemap.json
 Packages
 DevPackages
 
+dist/
+.astro/
+node_modules/
+/docs/.vscode/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.env
+.env.production
+
+.DS_Store
+
 /scripts/roblox.d.luau
