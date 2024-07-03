@@ -1,0 +1,40 @@
+---
+title: trackDocumentHistory
+description: Manage documents in Mara.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+Tracking the history of edits in a document is easy thanks to this utility function.
+
+```lua showLineNumbers
+local trackDocumentHistory = Mara.trackDocumentHistory
+local createDocument = Mara.createDocument
+
+local document = trackDocumentHistory(
+    createDocument({ a = 0 })
+)
+
+document:edit(function(contents)
+    contents.a += 1
+end)
+
+document:undo() --> { a = 0 }
+document:redo() --> { a = 1 }
+```
+
+<Aside type='caution'>
+
+You must call this method in order to use [`document:undo()`](/reference/create-document/document/#undo) or [`document:redo()`](/reference/create-document/document/#redo)!
+
+</Aside>
+
+#### Parameters
+
+- `document` - The [document](/reference/create-document/document) you want to track edits for
+
+#### Returns
+
+The `document` you passed in `trackDocumentHistory()`.
+
+---
