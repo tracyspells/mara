@@ -39,13 +39,22 @@ export default defineConfig({
 				{
 					label: 'API',
 					items: [
+
 						{
 							label: 'Documents',
 							items: [
-								{ label: 'createDocument', link: '/reference/create-document/' },
-								{ label: 'Document', link: '/reference/create-document/document' }
+								{ label: 'createDocument', link: '/reference/create-document' },
+								{ label: 'Document', link: '/reference/create-document/document' },
 							],
-						}
+						},
+
+						{
+							label: 'Utils',
+							items: [
+								{ label: 'trackDocumentHistory', link: '/reference/utility/document-history' },
+							],
+						},
+
 					],
 				}
 			],
