@@ -37,5 +37,26 @@ end)
 
 But what happens if you want more control when listening to document changes?
 
-## Mara.watch()
+## Predicates
+
+Predicates are useful because they allow you to run conditional side effects.
+
+Let's take our `timer` document and add a predicate that checks when the timer reaches zero.
+
+```lua showLineNumbers
+local function reachedZero(timeLeft: number)
+    return timeLeft <= 0
+end
+
+timer:changed(function(timeLeft: number)
+    if not reachedZero(timeLeft) then
+        return
+    end
+
+    print("Time's up!")
+end)
+```
+
+## Selectors
+
 
