@@ -19,7 +19,7 @@ export default defineConfig({
 
 			sidebar: [
 				{
-					label: 'Getting Started',
+					label: 'Start Here',
 					items: [
 						{ label: 'Introduction', link: '/getting-started/introduction/' },
 						{ label: 'Installation', link: '/getting-started/installation/' },
@@ -37,9 +37,17 @@ export default defineConfig({
 				},
 
 				{
-					label: 'Reference',
-					autogenerate: { directory: 'reference' },
-				},
+					label: 'API',
+					items: [
+						{
+							label: 'Documents',
+							items: [
+								{ label: 'createDocument', link: '/reference/create-document/' },
+								{ label: 'Document', link: '/reference/create-document/document' }
+							],
+						}
+					],
+				}
 			],
 		}),
 	],
