@@ -19,7 +19,7 @@ Alternatively, you can check out the latest [GitHub Release](https://github.com/
 
 ### 📃 Create Documents
 
-Mara uses (documents)[https://tracyspells.github.io/mara/reference/create-document/document/], containers that hold state.
+Mara uses [documents](https://tracyspells.github.io/mara/reference/create-document/document/), containers that hold state.
 
 ```lua
 local Mara = require(ReplicatedStorage.Packages.Mara)
