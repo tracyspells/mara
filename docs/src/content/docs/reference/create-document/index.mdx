@@ -1,0 +1,226 @@
+---
+title: createDocument
+description: Manage your game's state with documents.
+---
+
+import { Aside, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+
+`Mara.createDocument()` lets you create a document that contains part of your state.
+
+```lua
+local document = Mara.createDocument(initialContents)
+```
+
+---
+
+## Reference
+
+### `createDocument(initialContents)`
+
+Creates a document initialized with the given `initialContents`.
+
+```lua showLineNumbers
+local createDocument = Mara.createDocument
+
+type Document<Contents> = Mara.Document<Contents>
+
+type Contents = {
+    count: number,
+}
+
+local contents: Contents = {
+    count = 0
+}
+
+local document = createDocument(contents) :: Document<Contents>
+```
+
+#### Parameters
+
+- `initialContents` - the initial state of your document
+
+#### Returns
+
+`createDocument()` returns a document that you can use to modify your state at any point in time.
+
+<Aside title = "Caveats">
+
+Your document contents _cannot_ be one of the following:
+
+- nil
+- Instances
+- metatables
+- functions
+
+</Aside>
+
+Except the following stated above, document contents can be set to whatever you want.
+
+---
+
+## Usage
+
+Documents are the state containers used to modify state or to listen for state changes. They utilize _immutable data_, ensuring safety and predictability when working with state.
+
+### Updating non-table documents
+
+Non-table documents are documents whose state isn't a table. 
+
+Let's take our `Counter` document and increment the count.
+
+```lua showLineNumbers
+local Mara = require(ReplicatedStorage.Packages.Mara)
+
+local createDocument = Mara.createDocument
+
+type Document<Contents> = Mara.Document<Contents>
+
+type Contents = number
+
+local counter = createDocument(0) :: Document<Contents>
+
+counter:edit(function(count)
+    return count + 1
+end)
+
+local result = counter:read()
+print('Count: ', result)
+```
+```lua
+--> Count: 1
+```
+
+### Updating table based documents
+
+Updating table based documents is simple and straightforward:
+
+```lua showLineNumbers
+local Mara = require(ReplicatedStorage.Packages.Mara)
+
+local createDocument = Mara.createDocument
+
+type Document<Contents> = Mara.Document<Contents>
+
+type Contents = {
+    count: number
+}
+
+local counter = createDocument({ count = 0 }) :: Document<Contents>
+
+counter:edit(function(contents)
+    contents.count += 1
+end)
+```
+
+### Updating nested state
+
+Because state is immutable, it can be tricky to update nested state.
+
+You can do one of two things:
+
+<Steps>
+
+1. If you're an open source library enjoyer, libraries like [Freeze](https://github.com/duckarmor/Freeze) and [Sift](https://github.com/cxmeel/sift) are great for working with immutable data.
+    
+    <Tabs>
+    <TabItem label = "Freeze">
+
+    ```lua showLineNumbers
+    local Mara = require(ReplicatedStorage.Packages.Mara)
+    local Freeze = require(ReplicatedStorage.Packages.Freeze)
+
+    local createDocument = Mara.createDocument
+
+    local List = Freeze.List
+
+    type Document<Contents> = Mara.Document<Contents>
+
+    type Contents = {
+        todos: { string },
+    }
+
+    local document = createDocument({
+        todos = {}
+    }) :: Document<Contents>
+
+    document:edit(function(contents)
+        contents.todos = List.push(contents.todos, "Do homework")
+    end)
+    ```
+
+    </TabItem>
+
+    <TabItem label = "Sift">
+
+    ```lua showLineNumbers
+    local Mara = require(ReplicatedStorage.Packages.Mara)
+    local Sift = require(ReplicatedStorage.Packages.Sift)
+
+    local createDocument = Mara.createDocument
+
+    local Array = Sift.Array
+
+    type Document<Contents> = Mara.Document<Contents>
+
+    type Contents = {
+        todos: { string },
+    }
+
+    local document = createDocument({
+        todos = {}
+    }) :: Document<Contents>
+
+    document:edit(function(contents)
+        contents.todos = Array.push(contents.todos, "Do homework")
+    end)
+    ```
+    </TabItem>
+    </Tabs>
+
+2. If you're a newbie or you would rather do it without using external libraries, Mara provides a method of making this process easier:
+    
+    ```lua showLineNumbers
+    local Mara = require(ReplicatedStorage.Packages.Mara)
+    
+    local createDocument = Mara.createDocument
+
+    type Document<Contents> = Mara.Document<Contents>
+
+    type Contents = {
+        todos: { string },
+    }
+
+    local document = createDocument({
+        todos = {}
+    }) :: Document<Contents>
+
+    -- Unfortunately, you lose types when using this method.
+    document:edit(function(todos: { string })
+        table.insert(todos, "Do homework")
+    end, { "todos" })
+    ```
+
+</Steps>
+
+<Aside type='caution' title = "Do not mutate nested state directly!">
+
+Nested states aren't copied when `document:edit()` is called. Make sure you aren't mutating them directly.
+
+✅ **DO THIS**
+```lua ins={ 3-4 }
+document:edit(function(contents)
+    -- Apply changes to a new 'todos' instead of the old one
+    contents.todos = table.clone(contents.todos)
+    table.insert(contents.todos, "Do homework")
+end)
+```
+
+❌ **DO NOT DO THIS**
+```lua del={ 3 }
+document:edit(function(contents)
+    -- You aren't allowed to mutate 'todos' directly.
+    table.insert(contents.todos, "Do homework") 
+end)
+```
+
+</Aside>

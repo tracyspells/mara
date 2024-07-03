@@ -1,0 +1,376 @@
+---
+title: Document
+description: Learn how a Document in Mara works.
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+A document is a state container with built in functions to update its contents. 
+
+To create one, use [`Mara.createDocument()`](/reference/create-document).
+
+---
+
+## Properties
+
+### `contentsType`
+`string`
+
+The type of the document's contents. Examples are:
+- string
+- Vector3
+- Vector2
+- table
+
+... and many more.
+
+---
+
+## Methods
+
+### `changed(callback)`
+
+Lets you listen to changes made to a document's contents.
+
+```lua showLineNumbers
+local timer = require(ReplicatedStorage.Documents.Timer)
+
+timer:changed(function(timeLeft: number)
+    print("Time left: ", timeLeft, " seconds")
+end)
+```
+
+#### Parameters
+
+- `callback` - A function that is called whenever the document's contents changes. The function receives the current contents as the first argument, and the previous contents as the second argument.
+
+#### Returns
+
+A [`RBXScriptConnection`](https://create.roblox.com/docs/reference/engine/datatypes/RBXScriptConnection) like object.
+
+---
+
+### `edit(makeChanges, path?)`
+
+The primary way of modifying a document's contents.
+
+```lua showLineNumbers
+local contents = {
+    timeLeft = 100
+}
+
+local timer = createDocument(contents)
+
+timer:edit(function(contents)
+    contents.timeLeft -= 1
+end)
+```
+
+#### Parameters
+
+- `makeChanges` - A function that is called to make changes to a document's contents. The function receives `contents` as the first and only argument.
+
+    ```lua showLineNumbers
+    local counter = createDocument({ count = 0})
+
+    counter:edit(function(contents)
+        contents.count += 1
+    end)
+    ```
+
+    <Aside>
+    
+    If you're working with table based documents, you **do not** need to return the `contents` argument. `contents` is the state you are _modifying_.
+
+    `:edit()` was designed to only shallow copy the root table, to prevent users from doing the above mentioned. 
+    
+    Unfortunately, nested tables aren't copied (as we're not deep copying the document contents). There are ways to mitigate this [issue](/reference/create-document/#updating-nested-state), however.
+
+    </Aside>
+
+    <Aside type = 'caution'>
+    
+    When working with non-table documents, it's _important_ that you **do** return the new state inside the `makeChanges` function.
+
+    ```lua showLineNumbers
+    local counter = createDocument(0)
+
+    counter:edit(function(count: number)
+        return count + 1
+    end)
+    ```
+
+    In the example above, if you didn't return anything, the `counter` document wouldn't update with the new count.
+
+    </Aside>
+
+    <Aside type = 'danger'>
+    
+    When working with non-table documents, **do not** return the following inside the `makeChanges` function:
+
+    - nil
+    - a value whose type differs then the value you initially set in `Mara.createDocument()`
+
+        ```lua
+
+        -- If what you put in `createDocument` is a number...
+        local document = createDocument(0)
+
+        document:edit(function()
+            -- ...You cannot return a string
+            return "Hi, my name's Bobby!"
+        end)
+
+        ```
+
+    </Aside>
+
+- `path` - An optional array of numbers/strings that represent keys in a table. Useful if you want to modify nested tables.
+
+    ```lua
+    local document = createDocument({
+        todos = {}
+    })
+
+    document:edit(function(contents)
+        -- the 'contents' table is the 'todos' table
+        table.insert(contents, "Do Homework")
+    end, { "todos" })
+    ```
+    <Aside type='tip'>
+
+    If any entry in `path` isn't a table, but is inside a table, `makeChanges()`
+    will be called with said table as the argument.
+
+    </Aside>
+
+    <Aside type = 'danger'>
+
+    If any entry in `path` does not exist, `makeChanges()` **will** be called with `nil` as the argument.
+
+    </Aside>
+
+
+#### Returns
+
+`:edit` does not return anything.
+
+---
+
+### `batchEdits(edits)`
+
+Allows you to batch multiple `:edit()` calls into one call. 
+
+This is useful because `:edit()` calls in the same frame will update a document's contents for each one.
+
+```lua showLineNumbers
+local document = createDocument({
+    a = 0,
+})
+
+document:changed(function(contents)
+    -- This function is only called once.
+    
+    print(contents) --> { a = 4 }
+end)
+
+document:batchEdits({
+    function(contents)
+        contents.a += 1
+    end,
+
+    function(contents)
+        contents.a += 3
+    end,
+})
+```
+
+#### Parameters
+
+- `edits` - An array of [`makeChanges`](#parameters-1) functions.
+
+#### Returns
+
+`:batchEdits` does not return anything.
+
+---
+
+
+### `read(selector?)`
+> alias -> `:get()`
+
+Lets you get the current state of your document's contents. You can optionally pass in a selector function to select a specific part of your state. 
+
+```lua showLineNumbers
+timer:read() --->  { timeLeft: 30 }
+timer:read(function(contents)
+    return contents.timeLeft
+end) ---> 30
+```
+
+#### Parameters
+
+- `selector` - A function that selects a specific part of your state. If not provided, the entire state is returned.
+
+<Aside>
+
+If your working with non-table documents, `:read()` merely returns the state.
+
+</Aside>
+
+
+#### Returns
+
+The document contents, or the result of the  `selector` function if one is provided.
+
+---
+
+### `setContents(newContents)`
+> alias -> `:set()`
+
+Allows you manually update the contents of your documents.
+
+```lua
+timer:setContents({ timeLeft = 0 })
+```
+
+<Aside>
+
+If you're working with table-based documents, you shouldn't need to call `:setContents()` unless in situations where you actually need to.
+
+</Aside>
+
+<Aside type='tip'>
+
+If you're dealing with non-table documents, `:setContents()` can be used as an alternate method of updating state if you don't want the sophistications of `:edit()`. For example,
+
+```lua
+timer:set( timer:get() - 1 )
+```
+
+</Aside>
+
+
+#### Parameters
+
+- `newContents` - The new contents of the document
+
+    <Aside title = "Caveats">
+
+    Your document contents _cannot_ be one of the following:
+
+    - nil
+    - Instances
+    - metatables
+    - functions
+
+    </Aside>
+
+    <Aside type = 'danger'>
+    
+    When working with non-table documents, **do not** set the following as `newContents`:
+
+    - a value whose type differs then the value you initially set in `Mara.createDocument()`
+
+    </Aside>
+
+
+#### Returns
+
+`setContents()` doesn't return anything.
+
+---
+
+### `resetContents()`
+> alias -> `:reset()`
+
+Resets your document contents to `initialContents`.
+
+```lua
+
+local timer = createDocument({ timeLeft = 99 })
+
+timer:edit(function(contents)
+    contents.timeLeft - 1
+end) --> { timeLeft: 98 }
+
+timer:resetContents() --> { timeLeft: 99 }
+```
+
+#### Returns
+
+`resetContents()` doesn't return anything.
+
+---
+
+### `shred()`
+
+Cleans up all connections, and destroys document dependencies.
+
+```lua
+
+local timer = createDocument({ timeLeft = 99 })
+
+timer:shred()
+```
+
+#### Returns
+
+`shred()` doesn't return anything.
+
+---
+
+### `undo()`
+
+Reverts back to a previous version of a document's contents.
+
+```lua
+
+local counter = createDocument(0)
+
+counter:edit(function(count: number)
+    return count + 1
+end)
+
+counter:undo() --> 0
+```
+
+<Aside type='caution'>
+
+You must call `Mara.trackDocumentHistory()` on your document before using this method!
+
+</Aside>
+
+#### Returns
+
+`undo()` doesn't return anything.
+
+---
+
+### `redo()`
+
+Reverts to the next version of a document's contents.
+
+```lua
+
+local counter = createDocument(0)
+
+counter:edit(function(count: number)
+    return count + 1
+end)
+
+counter:undo() --> 0
+counter:redo() --> 1
+```
+
+<Aside type='caution'>
+
+You must call `Mara.trackDocumentHistory()` on your document before using this method!
+
+</Aside>
+
+#### Returns
+
+`redo()` doesn't return anything.
+
+---
