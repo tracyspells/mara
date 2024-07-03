@@ -52,6 +52,7 @@ export default defineConfig({
 							label: 'Utils',
 							items: [
 								{ label: 'trackDocumentHistory', link: '/reference/utility/document-history' },
+								{ label: 'watch', link: '/reference/utility/watch' },
 							],
 						},
 
