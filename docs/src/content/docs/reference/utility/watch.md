@@ -72,6 +72,8 @@ end)
 - `selector` - A function that selects a specific part of your state. If not provided, the entire state is returned
 - `predicate` - A function that runs conditional side effects. If the predicate returns true, `listener` is called
 
+Doomsday.
+
 #### Returns
 
 A [`RBXScriptConnection`](https://create.roblox.com/docs/reference/engine/datatypes/RBXScriptConnection) like object.
