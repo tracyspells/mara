@@ -3,10 +3,6 @@
 # mara
 
 </div>
-
-# **WARNING**
-Do not use this library. It's not production ready and it never will be.
-
 ---
 
 _Mara_ is a lightweight state container that allows you to write simple code to manage state in Roblox.
