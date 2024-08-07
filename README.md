@@ -1,11 +1,12 @@
 <div align="center">
+    
 # mara
+    
+</div>
 
 <p align = "center">
     This project has been archived. Do not use for new work.
 </p>
-
-</div>
 
 
 _Mara_ is a lightweight state container that allows you to write simple code to manage state in Roblox.
