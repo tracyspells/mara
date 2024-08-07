@@ -5,9 +5,10 @@
 </div>
 
 <p align = "center">
-    This project has been archived. Do not use for new work.
+    <b>WARNING: </b> This project has been discontinued. Do not use for new work.
 </p>
 
+---
 
 _Mara_ is a lightweight state container that allows you to write simple code to manage state in Roblox.
 It is inspired by [Reflex](https://littensy.github.io/reflex/) and [Valtio](https://valtio.pmnd.rs/).
